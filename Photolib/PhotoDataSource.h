@@ -13,4 +13,6 @@
 
 -(id) initWithItems:(NSArray*)photos;
 
+-(void) updateItems:(NSArray*)items;
+
 @end

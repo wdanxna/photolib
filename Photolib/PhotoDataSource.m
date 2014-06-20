@@ -24,6 +24,10 @@
     return self;
 }
 
+-(void) updateItems:(NSArray *)items{
+    self.photoArray = items;
+}
+
 #pragma mark - MWDataSource
 -(NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser{
     return self.photoArray.count;

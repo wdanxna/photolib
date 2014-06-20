@@ -30,6 +30,10 @@
     [self setupCollectionView];
 }
 
+-(void) refresh{
+    [self.collectionView reloadData];
+}
+
 -(void) setDataSource:(id)dataSource{
     self.collectionView.dataSource = dataSource;
 }
@@ -75,9 +79,10 @@
 }
 
 -(void) enterAlbumWithData:(Card*)data atIndexPath:(NSIndexPath*)indexPath{
-    if (self.delegate && [self.delegate conformsToProtocol:@protocol(WDBrowserDelegate)]){
-        [self.delegate WDBrowser:self didEnterFolder:data.path.path];
-    }
+//    if (self.delegate && [self.delegate conformsToProtocol:@protocol(WDBrowserDelegate)]){
+//        [self.delegate WDBrowser:self didEnterFolder:data.path.path];
+//    }
+    [self pushPath:data.path.path];
 }
 
 -(void) viewPhotoWithData:(Card*)data atIndexPath:(NSIndexPath*)indexPath{
@@ -91,12 +96,16 @@
     self.current_path = path;
     [self.delegate WDBrowser:self didUpdateDataWithPath:path];
     [self.collectionView reloadData];
+    [self.delegate WDBrowser:self didEnterFolder:path isRoot:NO];
 }
+
 -(void) back{
     self.current_path = [self.stack lastObject];
     [self.stack removeLastObject];
     [self.delegate WDBrowser:self didUpdateDataWithPath:self.current_path];
     [self.collectionView reloadData];
+    BOOL root = self.stack.count < 1 ? YES : NO;
+    [self.delegate WDBrowser:self didEnterFolder:self.current_path isRoot:root];
 }
 
 - (void)didReceiveMemoryWarning

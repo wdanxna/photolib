@@ -16,16 +16,20 @@
 
 @end
 
-@implementation Store
+@implementation Store{
+    NSMutableDictionary* _curlevelDic;
+    NSMutableDictionary* _mutableData;
+}
 
 -(id) init{
     self = [super init];
     if (self){
 //        self.rawData = [[NSMutableDictionary alloc] init];
-        NSString* json = @"{\"BusinessCards\": {\"date\": null, \"path\": \"BusinessCards\", \"pwd\": null, \"content\": {\"Tough\": {\"date\": null, \"path\": \"BusinessCards/Tough\", \"pwd\": null, \"content\": {\"Gogo\": {\"date\": null, \"path\": \"BusinessCards/Tough/Gogo.jpg\", \"pwd\": null, \"name\": \"Gogo\"}}, \"name\": \"Tough\"}, \"nihao\": {\"date\": null, \"path\": \"BusinessCards/nihao\", \"pwd\": null, \"content\": {\"Paper\": {\"date\": null, \"path\": \"BusinessCards/nihao/Paper.jpg\", \"pwd\": null, \"name\": \"Paper\"}, \"\u7b14\u8bb0\": {\"date\": null, \"path\": \"BusinessCards/nihao/\u7b14\u8bb0.jpg\", \"pwd\": null, \"name\": \"\u7b14\u8bb0\"}}, \"name\": \"nihao\"}, \"\u8fd9\u662f\u4e8c\": {\"date\": null, \"path\": \"BusinessCards/\u8fd9\u662f\u4e8c\", \"pwd\": null, \"content\": {\"Desjk\": {\"date\": null, \"path\": \"BusinessCards/\u8fd9\u662f\u4e8c/Desjk.jpg\", \"pwd\": null, \"name\": \"Desjk\"}, \"\u4ea8\u5229\u4e0b\": {\"date\": null, \"path\": \"BusinessCards/\u8fd9\u662f\u4e8c/\u4ea8\u5229\u4e0b.jpg\", \"pwd\": null, \"name\": \"\u4ea8\u5229\u4e0b\"}, \"\u5c01\u9762\": {\"date\": null, \"path\": \"BusinessCards/\u8fd9\u662f\u4e8c/\u5c01\u9762.jpg\", \"pwd\": null, \"name\": \"\u5c01\u9762\"}, \"\u80e1\u5065\u806a\": {\"date\": null, \"path\": \"BusinessCards/\u8fd9\u662f\u4e8c/\u80e1\u5065\u806a.jpg\", \"pwd\": null, \"name\": \"\u80e1\u5065\u806a\"}, \"\u7c97\u7cd9\": {\"date\": null, \"path\": \"BusinessCards/\u8fd9\u662f\u4e8c/\u7c97\u7cd9.jpg\", \"pwd\": null, \"name\": \"\u7c97\u7cd9\"}}, \"name\": \"\u8fd9\u662f\u4e8c\"}, \"\u9b54\u6cd5\": {\"date\": null, \"path\": \"BusinessCards/\u9b54\u6cd5\", \"pwd\": null, \"content\": {\"\u5c01\u9762\": {\"date\": null, \"path\": \"BusinessCards/\u9b54\u6cd5/\u5c01\u9762.jpg\", \"pwd\": null, \"name\": \"\u5c01\u9762\"}, \"\u6211\u64e6\": {\"date\": null, \"path\": \"BusinessCards/\u9b54\u6cd5/\u6211\u64e6.jpg\", \"pwd\": null, \"name\": \"\u6211\u64e6\"}, \"Sicp\": {\"date\": null, \"path\": \"BusinessCards/\u9b54\u6cd5/Sicp.jpg\", \"pwd\": null, \"name\": \"Sicp\"}, \"Kkk\": {\"date\": null, \"path\": \"BusinessCards/\u9b54\u6cd5/Kkk.jpg\", \"pwd\": null, \"name\": \"Kkk\"}}, \"name\": \"\u9b54\u6cd5\"}}, \"name\": \"BusinessCards\"}}";
+        NSString* json = @"{\"BusinessCards\":{\"date\":null,\"path\":\"BusinessCards\",\"pwd\":null,\"content\":{\"Tough\":{\"date\":null,\"path\":\"BusinessCards/Tough\",\"pwd\":null,\"content\":{\"Gogo\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"Gogo\"}},\"name\":\"Tough\"},\"nihao\":{\"date\":null,\"path\":\"BusinessCards/nihao\",\"pwd\":null,\"content\":{\"Paper\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg\",\"pwd\":null,\"name\":\"Paper\"},\"笔记\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"笔记\"}},\"name\":\"nihao\"},\"这是二\":{\"date\":null,\"path\":\"BusinessCards/这是二\",\"pwd\":null,\"content\":{\"Desjk\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"Desjk\"},\"亨利下\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"亨利下\"},\"封面\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"封面\"},\"胡健聪\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg\",\"pwd\":null,\"name\":\"胡健聪\"},\"粗糙\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"粗糙\"}},\"name\":\"这是二\"},\"魔法\":{\"date\":null,\"path\":\"BusinessCards/魔法\",\"pwd\":null,\"content\":{\"封面\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"封面\"},\"我擦\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg\",\"pwd\":null,\"name\":\"我擦\"},\"Sicp\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"Sicp\"},\"Kkk\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"Kkk\"}},\"name\":\"魔法\"}},\"name\":\"BusinessCards\"}}";
         
         self.rawData = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
-        
+        _mutableData = [self deepMutableCopy:self.rawData];
+        _curlevelDic = [[NSMutableDictionary alloc] init];
         self.albums = [[NSMutableArray alloc] init];
         self.photos = [[NSMutableArray alloc] init];
         NSLog(@"haha");
@@ -34,16 +38,16 @@
 }
 
 -(NSDictionary*)dataWithPath:(NSString *)path{
-    NSMutableDictionary* result;
     
     NSArray* components = [path componentsSeparatedByString:@"/"];
     NSString* validPath = path;
     if (components.count > 1){
         validPath = [components componentsJoinedByString:@".content."];
     }
-    NSDictionary* curLevel = [self.rawData valueForKeyPath:validPath];
-    if (curLevel && curLevel[@"content"]){
-        NSDictionary* contents = curLevel[@"content"];
+    NSDictionary* cur_level_temp = [self.rawData valueForKeyPath:validPath];
+    _curlevelDic = [self deepMutableCopy:cur_level_temp];
+    if (_curlevelDic && _curlevelDic[@"content"]){
+        NSDictionary* contents = _curlevelDic[@"content"];
         [self.albums removeAllObjects];
         [self.photos removeAllObjects];
         for (id key in contents) {
@@ -81,6 +85,11 @@
     return [self dataWithPath:[self rootPath]];
 }
 
+-(NSDictionary*) curdata{
+    return @{@"AlbumCell":self.albums,
+             @"PhotoCell":self.photos};
+}
+
 
 -(NSArray*) photosArray{
     NSMutableArray* p = [[NSMutableArray alloc] initWithCapacity:self.photos.count];
@@ -90,4 +99,28 @@
     return p;
 }
 
+
+-(void) createAlbumAtPath:(NSString*)path name:(NSString*)name passwd:(NSString*)passwd complete:(createAlbumCallback)callback{
+    Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:[path stringByAppendingPathComponent:name]] thumb:nil name:name album:YES];
+    NSError* error = nil;
+    //do some request here
+    [self.albums addObject:newAlbum];
+    [_curlevelDic setValue:newAlbum forKeyPath:[NSString stringWithFormat:@"content.%@",name]];
+    callback(error);
+}
+
+-(NSMutableDictionary*) deepMutableCopy:(NSDictionary*)dict{
+    //warning: this function works only if your dict is
+    //a pure (nested)dictionary, not nested with other kind of imutable
+    //type like: NSArray, use with caution.
+    //ps: if you want a deep copy function support all mutable type
+    //its better to check dictionaryhelper authored by issac
+    NSMutableDictionary* cur = [dict mutableCopy];
+    for (id key in dict){
+        if ([cur[key] isKindOfClass:[NSDictionary class]]){
+            cur[key] = [self deepMutableCopy:cur[key]];
+        }
+    }
+    return cur;
+}
 @end

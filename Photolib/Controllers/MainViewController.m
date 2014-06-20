@@ -17,10 +17,11 @@
 #import "PhotoCell.h"
 #import "MWPhotoBrowser.h"
 #import "PhotoDataSource.h"
+#import "NewAlbumController.h"
 /*
  This class should work as embaded browser's delegate.
  */
-@interface MainViewController ()<WDBrowserDelegate>
+@interface MainViewController ()<WDBrowserDelegate,NewAlbumDelegate>
 @property (weak, nonatomic) IBOutlet UIView *browserView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *backButton;
 @property (nonatomic,weak) BrowserViewCotroller* browser;
@@ -80,12 +81,15 @@
 }
 
 #pragma mark - WDBrowser
--(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path{
+-(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path isRoot:(BOOL)root{
     NSLog(@"Did enter Folder: %@", path);
     NSArray* coms = [path componentsSeparatedByString:@"/"];
     self.navigationItem.title = [coms lastObject];
-    [self.browser pushPath:path];
-    [self backBackHidden:NO];
+    if (root){
+        [self backBackHidden:YES];
+    }else{
+        [self backBackHidden:NO];
+    }
 }
 
 -(void) WDBrowser:(BrowserViewCotroller *)browser didViewPhotoAtIndex:(NSInteger)index{
@@ -96,10 +100,25 @@
 -(void) WDBrowser:(BrowserViewCotroller *)browser didUpdateDataWithPath:(NSString *)path{
     NSDictionary* newData = [[AppDelegate sharedDelegate].Store dataWithPath:path];
     [self.dicDataSource updateItems:newData];
+    [self.photoDataSource updateItems:[[AppDelegate sharedDelegate].Store photosArray]];
 }
 
 
 #pragma mark -
+#pragma mark - NewAlbum
+-(void) newAlbumController:(NewAlbumController *)controller didDoneWithName:(NSString *)name passwd:(NSString *)passwd {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    NSLog(@"create album:%@ pwd: %@",name,passwd);
+    [[AppDelegate sharedDelegate].Store createAlbumAtPath:self.browser.current_path name:name passwd:passwd complete:^(NSError* error){
+        NSDictionary* curData = [[AppDelegate sharedDelegate].Store curdata];
+        [self.dicDataSource updateItems:curData];
+        [self.browser refresh];
+    }];
+}
+-(void) newAlbumControllerDidCancle:(NewAlbumController *)controller{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 
 -(void) startPhotoViewAtIndex:(NSInteger)index{
     //issue here: https://github.com/mwaterfall/MWPhotoBrowser/issues/208
@@ -122,6 +141,8 @@
 }
 
 
+
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -130,6 +151,9 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     NSLog(@"hi");
+    if ([segue.identifier isEqualToString:@"newAlbum"]){
+        ((NewAlbumController*)((UINavigationController*)[segue destinationViewController]).viewControllers[0]).delegate = self;
+    }
 }
 
 

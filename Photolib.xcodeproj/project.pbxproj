@@ -69,6 +69,7 @@
 		4940F063192DD8DE00B7A76D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4940F042192DD8DE00B7A76D /* UIKit.framework */; };
 		4940F06B192DD8DE00B7A76D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4940F069192DD8DE00B7A76D /* InfoPlist.strings */; };
 		4940F06D192DD8DE00B7A76D /* PhotolibTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4940F06C192DD8DE00B7A76D /* PhotolibTests.m */; };
+		4958BA61195189130015BF74 /* NewAlbumController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4958BA60195189130015BF74 /* NewAlbumController.m */; };
 		49BFC31C1946E108008DEA55 /* album_frame.png in Resources */ = {isa = PBXBuildFile; fileRef = 49BFC31B1946E108008DEA55 /* album_frame.png */; };
 		49BFC3211946E288008DEA55 /* AlbumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BFC3201946E288008DEA55 /* AlbumCell.m */; };
 		49BFC3241946E339008DEA55 /* PhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BFC3231946E339008DEA55 /* PhotoCell.m */; };
@@ -213,6 +214,8 @@
 		4940F068192DD8DE00B7A76D /* PhotolibTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhotolibTests-Info.plist"; sourceTree = "<group>"; };
 		4940F06A192DD8DE00B7A76D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4940F06C192DD8DE00B7A76D /* PhotolibTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotolibTests.m; sourceTree = "<group>"; };
+		4958BA5F195189130015BF74 /* NewAlbumController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewAlbumController.h; sourceTree = "<group>"; };
+		4958BA60195189130015BF74 /* NewAlbumController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewAlbumController.m; sourceTree = "<group>"; };
 		49BFC31B1946E108008DEA55 /* album_frame.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = album_frame.png; sourceTree = "<group>"; };
 		49BFC31F1946E288008DEA55 /* AlbumCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumCell.h; sourceTree = "<group>"; };
 		49BFC3201946E288008DEA55 /* AlbumCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumCell.m; sourceTree = "<group>"; };
@@ -439,6 +442,8 @@
 				4940F057192DD8DE00B7A76D /* BrowserViewCotroller.m */,
 				49BFC3281947EBB8008DEA55 /* MainViewController.h */,
 				49BFC3291947EBB8008DEA55 /* MainViewController.m */,
+				4958BA5F195189130015BF74 /* NewAlbumController.h */,
+				4958BA60195189130015BF74 /* NewAlbumController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -685,6 +690,7 @@
 				490B36341945A2ED00B5A0F3 /* PSTCollectionViewData.m in Sources */,
 				490B36401945A2ED00B5A0F3 /* NSData+GIF.m in Sources */,
 				490B36441945A2ED00B5A0F3 /* SDWebImageDecoder.m in Sources */,
+				4958BA61195189130015BF74 /* NewAlbumController.m in Sources */,
 				490B363B1945A2ED00B5A0F3 /* PSTGridLayoutRow.m in Sources */,
 				490B362C1945A2ED00B5A0F3 /* MWZoomingScrollView.m in Sources */,
 				49BFC3211946E288008DEA55 /* AlbumCell.m in Sources */,

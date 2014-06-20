@@ -14,7 +14,7 @@
 -(void) WDBrowser:(BrowserViewCotroller *)browser didSelectItemAtIndex:(NSInteger)index;
 
 -(void) WDBrowser:(BrowserViewCotroller *)browser didViewPhotoAtIndex:(NSInteger)index;
--(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path;
+-(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path isRoot:(BOOL)root;
 -(void) WDBrowser:(BrowserViewCotroller *)browser didUpdateDataWithPath:(NSString*)path;
 
 @end
@@ -28,6 +28,7 @@
 -(void) changeSelection:(BOOL)selected onCell:(UICollectionViewCell*)cell;
 -(void) enterCell:(UICollectionViewCell*)cell;
 
+-(void) refresh;
 -(void) pushPath:(NSString*)path;
 -(void) back;
 
