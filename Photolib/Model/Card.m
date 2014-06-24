@@ -9,7 +9,7 @@
 #import "Card.h"
 
 @implementation Card
-@synthesize path, photo, thumb, name, isAlbum;
+@synthesize path, photo, thumb, name, isAlbum, password;
 
 -(id)initWithPath:(NSURL*)apath thumb:(UIImage*)athumb name:(NSString*)aname album:(BOOL)album{
     self= [super init];
@@ -18,7 +18,7 @@
         self.thumb = athumb;
         self.isAlbum = album;
         self.name = aname;
-        
+        self.password = @"";
         if (!self.isAlbum && self.path){
             self.photo = [[MWPhoto alloc] initWithURL:apath];
         }

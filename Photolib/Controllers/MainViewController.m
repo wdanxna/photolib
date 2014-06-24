@@ -18,16 +18,20 @@
 #import "MWPhotoBrowser.h"
 #import "PhotoDataSource.h"
 #import "NewAlbumController.h"
+#import "ExportCardController.h"
+#import "ExportArrayDataSource.h"
+#import "ExportAlbumCell.h"
 /*
  This class should work as embaded browser's delegate.
  */
-@interface MainViewController ()<WDBrowserDelegate,NewAlbumDelegate>
+@interface MainViewController ()<WDBrowserDelegate,NewAlbumDelegate,ExportCardProtocol>
 @property (weak, nonatomic) IBOutlet UIView *browserView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *backButton;
 @property (nonatomic,weak) BrowserViewCotroller* browser;
 @property (nonatomic,strong) DictionaryDataSource* dicDataSource;
 @property (nonatomic,strong) PhotoDataSource* photoDataSource;
 @property (nonatomic,strong) MWPhotoBrowser* photoViewer;
+@property (nonatomic,strong) ExportArrayDataSource* exportArrayDataSource;
 
 @end
 
@@ -93,7 +97,7 @@
 }
 
 -(void) WDBrowser:(BrowserViewCotroller *)browser didViewPhotoAtIndex:(NSInteger)index{
-    NSLog(@"view photo at: %d",index);
+//    NSLog(@"view photo at: %d",index);
     [self startPhotoViewAtIndex:index];
 }
 
@@ -103,6 +107,10 @@
     [self.photoDataSource updateItems:[[AppDelegate sharedDelegate].Store photosArray]];
 }
 
+-(void) WDBrowser:(BrowserViewCotroller *)browser didSelectItemAtIndex:(NSInteger)index{
+    
+}
+
 
 #pragma mark -
 #pragma mark - NewAlbum
@@ -110,7 +118,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"create album:%@ pwd: %@",name,passwd);
     [[AppDelegate sharedDelegate].Store createAlbumAtPath:self.browser.current_path name:name passwd:passwd complete:^(NSError* error){
-        NSDictionary* curData = [[AppDelegate sharedDelegate].Store curdata];
+        NSDictionary* curData = [[AppDelegate sharedDelegate].Store currentLevelData];
         [self.dicDataSource updateItems:curData];
         [self.browser refresh];
     }];
@@ -129,6 +137,16 @@
     [temp_b setCurrentPhotoIndex:index];
     [self.navigationController pushViewController:temp_b animated:YES];
 }
+#pragma mark -
+#pragma mark - Export Controller
+-(void) exportCardController:(ExportCardController *)controller didImportDatas:(NSArray *)datas{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void) exportCardControllerDidCancle:(ExportCardController *)controller{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+#pragma mark -
 
 - (void)didReceiveMemoryWarning
 {
@@ -136,12 +154,56 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+#pragma mark -
+#pragma mark - Button Actions
+
 -(IBAction)performBack:(id)sender{
     [self.browser back];
 }
 
+- (IBAction)deleteAction:(id)sender {
+    NSArray* selected = [self.browser indexPathsForSelectedItems];
+    NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:selected.count];
+    if (selected.count){
+        NSLog(@"remove %d objects",selected.count);
+//        [[AppDelegate sharedDelegate].Store removeItemAtIndexPaths:selected];
+//        [self.browser refresh];
+        
+        for (NSIndexPath* indexpath in selected){
+            Card* c = [self.dicDataSource itemAtIndex:indexpath];
+            [result addObject:c.name];
+        }
+        
+        [[AppDelegate sharedDelegate].Store removeItemWithNames:result complete:^(NSError *error) {
+            NSDictionary* curData = [[AppDelegate sharedDelegate].Store dataWithPath:self.browser.current_path];
+            [self.dicDataSource updateItems:curData];
+            [self.browser refresh];
+        }];
+    }
+    
+}
 
-
+- (IBAction)exportAction:(id)sender {
+    NSArray* indexPaths = [self.browser indexPathsForSelectedItems];
+    if (indexPaths.count < 1){
+        return;
+    }
+    UINavigationController* navi = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportController"];
+    ExportCardController* exportController = navi.viewControllers[0];
+    exportController.delegate = self;
+    
+    NSArray* albums = [[AppDelegate sharedDelegate].Store getAlbums];
+    self.exportArrayDataSource = [[ExportArrayDataSource alloc] initWithItems:albums
+                                                               cellIdentifier:@"ExportAlbumCell"
+                                                           configureCellBlock:^(id cell, id item) {
+                                                               [((ExportAlbumCell*)cell) configureCell:item];
+    }];
+    exportController.tableView.dataSource = self.exportArrayDataSource;
+    
+    [self presentViewController:navi animated:YES completion:nil];
+}
+#pragma mark -
 
 #pragma mark - Navigation
 

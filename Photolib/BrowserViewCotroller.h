@@ -31,5 +31,6 @@
 -(void) refresh;
 -(void) pushPath:(NSString*)path;
 -(void) back;
+-(NSArray*) indexPathsForSelectedItems;
 
 @end

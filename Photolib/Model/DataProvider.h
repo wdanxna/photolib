@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 typedef void (^createAlbumCallback)(NSError* error);
+typedef void (^deleteItemCallback)(NSError* error);
 
 @protocol DataProvider <NSObject>
 
@@ -16,9 +17,13 @@ typedef void (^createAlbumCallback)(NSError* error);
 -(NSDictionary*)dataWithPath:(NSString*)path;
 
 -(NSArray*)photosArray;
--(NSDictionary*) curdata;
+-(NSDictionary*) currentLevelData;
 
 -(NSString*) rootPath;
+
+-(NSArray*)getAlbums;
+
+-(void) removeItemWithNames:(NSArray*)names complete:(deleteItemCallback)callback;
 
 -(void) createAlbumAtPath:(NSString*)path name:(NSString*)name passwd:(NSString*)passwd complete:(createAlbumCallback)callback;
 

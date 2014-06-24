@@ -15,6 +15,7 @@
 @property(nonatomic,strong)MWPhoto* photo;
 @property(nonatomic,strong)UIImage* thumb;
 @property(nonatomic,strong)NSString* name;
+@property(nonatomic,strong)NSString* password;
 @property(nonatomic,assign)BOOL isAlbum;
 
 -(id)initWithPath:(NSURL*)path thumb:(UIImage*)image name:(NSString*)name album:(BOOL)album;

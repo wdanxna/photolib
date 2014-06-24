@@ -63,7 +63,6 @@
 #pragma mark - CollectionView Delegate
 -(void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     Card* current_data = [((DictionaryDataSource*)self.collectionView.dataSource) itemAtIndex:indexPath];
-    
 //    if (current_data.isAlbum){
 //        [self enterAlbumWithData:current_data atIndexPath:indexPath];
 //    }else {
@@ -106,6 +105,10 @@
     [self.collectionView reloadData];
     BOOL root = self.stack.count < 1 ? YES : NO;
     [self.delegate WDBrowser:self didEnterFolder:self.current_path isRoot:root];
+}
+
+-(NSArray*)indexPathsForSelectedItems{
+    return self.collectionView.indexPathsForSelectedItems;
 }
 
 - (void)didReceiveMemoryWarning
