@@ -9,12 +9,22 @@
 #import "Card.h"
 
 @implementation Card
-@synthesize path, photo, thumb, name, isAlbum, password;
+@synthesize path, photo, thumb, name, isAlbum, password, thumb_path;
 
--(id)initWithPath:(NSURL*)apath thumb:(UIImage*)athumb name:(NSString*)aname album:(BOOL)album{
+-(id)initWithPath:(NSURL*)apath thumb:(UIImage*)athumb thumbPath:(NSURL*)thumbPath name:(NSString*)aname album:(BOOL)album{
     self= [super init];
     if (self){
-        self.path = apath;
+        if ([apath isKindOfClass:[NSString class]]){
+            self.path = [NSURL URLWithString:(NSString*)apath];
+        }else{
+            self.path = apath;
+        }
+        if ([thumbPath isKindOfClass:[NSString class]]){
+            self.thumb_path = [NSURL URLWithString:(NSString*)thumbPath];
+        }else{
+            self.thumb_path = thumbPath;
+        }
+        
         self.thumb = athumb;
         self.isAlbum = album;
         self.name = aname;
@@ -24,6 +34,10 @@
         }
     }
     return self;
+}
+
+-(NSString*) localizedTitle{
+    return self.name;
 }
 
 @end

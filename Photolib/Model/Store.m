@@ -55,17 +55,26 @@
 -(NSArray*)getAlbums{
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.albums.count];
     for (NSString* path in self.albums){
-        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path] thumb:[self getThumbWithPath:path] name:path album:YES];
+        NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
+        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path] thumb:nil thumbPath:[self thumbpath] name:name album:YES];
         [result addObject:newCard];
     }
     return result;
 }
 
+-(NSURL*)thumbpath{
+    return [NSURL URLWithString:@"http://s1.cn.bing.net/th?id=OJ.Ui1snPxx1Rsmhg&pid=MSNJVFeeds"];
+}
+
+-(UIImage*) getThumbWithPath:(NSString*)path{
+    return [UIImage imageNamed:@"test.jpg"];//for test
+}
+
 
 -(NSDictionary*)dataWithPath:(NSString *)path{
-    if ([path isEqualToString:_curlevelPath]){
-        return [self currentLevelData];
-    }
+//    if ([path isEqualToString:_curlevelPath]){
+//        return [self currentLevelData];
+//    }
     _curlevelPath = path;
     NSString* validPath = [self path2IndexPaths:path];
     NSDictionary* cur_level_temp = [self.rawData valueForKeyPath:validPath];
@@ -79,10 +88,11 @@
             if (item){
                 BOOL isalbum = item[@"content"]?YES:NO;
                 __weak NSMutableArray* whichToInsert = isalbum?_curAlbums:_curPhotos;
-                UIImage* thumb = [self getThumbWithPath:item[@"path"]];
+//                UIImage* thumb = [self getThumbWithPath:item[@"path"]];
                 NSURL* imagePath = [self nsurlWithPath:item[@"path"]];
+                Card* insertone = [[Card alloc] initWithPath:imagePath thumb:nil thumbPath:[self thumbpath] name:item[@"name"] album:isalbum];
                 [whichToInsert
-                 addObject:[[Card alloc] initWithPath:imagePath thumb:thumb name:item[@"name"] album:isalbum]];
+                 addObject:insertone];
             }
         }
     }
@@ -110,11 +120,6 @@
     return [NSURL URLWithString:path];
 }
 
--(UIImage*) getThumbWithPath:(NSString*)path{
-    
-    return [UIImage imageNamed:@"test.jpg"];//for test
-}
-
 -(NSString*) rootPath{
     return [[self.rawData allKeys] firstObject];
 }
@@ -135,7 +140,7 @@
 
 -(void) createAlbumAtPath:(NSString*)path name:(NSString*)name passwd:(NSString*)passwd complete:(createAlbumCallback)callback{
     NSString* encodedPath = [[path stringByAppendingPathComponent:name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:encodedPath] thumb:nil name:name album:YES];
+    Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:encodedPath] thumb:nil thumbPath:[self thumbpath] name:name album:YES];
     NSError* error = nil;
     //do some request here
     [_curAlbums addObject:newAlbum];
@@ -153,7 +158,7 @@
     [_mutableData setValue:_curlevelDic forKeyPath:newIndexPaths];
     self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
     self.albums = [self allAlbums:self.rawData[@"BusinessCards"]];
-    callback(error);
+    callback(error, [self dataWithPath:_curlevelPath]);
 }
 
 -(void) removeItemWithNames:(NSArray *)names complete:(deleteItemCallback)callback{
@@ -161,7 +166,7 @@
     [_mutableData setValue:_curlevelDic forKeyPath:[self path2IndexPaths:_curlevelPath]];
     self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
     self.albums = [self allAlbums:self.rawData[@"BusinessCards"]];
-    callback(nil);
+    callback(nil,[self dataWithPath:_curlevelPath]);
 }
 
 -(NSMutableDictionary*) deepMutableCopy:(NSDictionary*)dict{

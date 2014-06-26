@@ -16,8 +16,9 @@
 
 @end
 
-@interface ExportCardController : UITableViewController
+@interface ExportCardController : UIViewController
 
 @property(nonatomic, strong) id<ExportCardProtocol> delegate;
+-(void) setDataSourceObj:(id)obj;
 
 @end

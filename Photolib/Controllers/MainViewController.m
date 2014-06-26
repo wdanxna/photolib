@@ -21,6 +21,7 @@
 #import "ExportCardController.h"
 #import "ExportArrayDataSource.h"
 #import "ExportAlbumCell.h"
+#import "WDSearchTableView.h"
 /*
  This class should work as embaded browser's delegate.
  */
@@ -117,9 +118,8 @@
 -(void) newAlbumController:(NewAlbumController *)controller didDoneWithName:(NSString *)name passwd:(NSString *)passwd {
     [self dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"create album:%@ pwd: %@",name,passwd);
-    [[AppDelegate sharedDelegate].Store createAlbumAtPath:self.browser.current_path name:name passwd:passwd complete:^(NSError* error){
-        NSDictionary* curData = [[AppDelegate sharedDelegate].Store currentLevelData];
-        [self.dicDataSource updateItems:curData];
+    [[AppDelegate sharedDelegate].Store createAlbumAtPath:self.browser.current_path name:name passwd:passwd complete:^(NSError* error, id current_data){
+        [self.dicDataSource updateItems:current_data];
         [self.browser refresh];
     }];
 }
@@ -175,9 +175,8 @@
             [result addObject:c.name];
         }
         
-        [[AppDelegate sharedDelegate].Store removeItemWithNames:result complete:^(NSError *error) {
-            NSDictionary* curData = [[AppDelegate sharedDelegate].Store dataWithPath:self.browser.current_path];
-            [self.dicDataSource updateItems:curData];
+        [[AppDelegate sharedDelegate].Store removeItemWithNames:result complete:^(NSError *error, id current_data) {
+            [self.dicDataSource updateItems:current_data];
             [self.browser refresh];
         }];
     }
@@ -192,14 +191,14 @@
     UINavigationController* navi = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportController"];
     ExportCardController* exportController = navi.viewControllers[0];
     exportController.delegate = self;
-    
     NSArray* albums = [[AppDelegate sharedDelegate].Store getAlbums];
     self.exportArrayDataSource = [[ExportArrayDataSource alloc] initWithItems:albums
                                                                cellIdentifier:@"ExportAlbumCell"
                                                            configureCellBlock:^(id cell, id item) {
                                                                [((ExportAlbumCell*)cell) configureCell:item];
     }];
-    exportController.tableView.dataSource = self.exportArrayDataSource;
+    
+    [exportController setDataSourceObj:self.exportArrayDataSource];
     
     [self presentViewController:navi animated:YES completion:nil];
 }

@@ -8,6 +8,7 @@
 
 #import "ExportAlbumCell.h"
 #import "Card.h"
+#import "UIImageView+WebCache.h"
 
 @implementation ExportAlbumCell
 
@@ -26,7 +27,7 @@
 }
 
 -(void) configureCell:(id)item{
-    [self.thumb setImage:((Card*) item).thumb];
+    [self.thumb setImageWithURL:((Card*)item).thumb_path placeholderImage:nil];
     self.title.text = ((Card*) item).name;
 }
 

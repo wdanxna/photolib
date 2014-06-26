@@ -28,7 +28,7 @@
 }
 
 -(void) configreCell:(Card *)data{
-    [self.thumb setImage:data.thumb];
+    [self.thumb setImageWithURL:data.thumb_path placeholderImage:nil];
     [self.label setText:data.name];
 }
 

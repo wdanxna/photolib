@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-typedef void (^createAlbumCallback)(NSError* error);
-typedef void (^deleteItemCallback)(NSError* error);
+typedef void (^createAlbumCallback)(NSError* error, id current_data);
+typedef void (^deleteItemCallback)(NSError* error, id current_data);
 
 @protocol DataProvider <NSObject>
 
