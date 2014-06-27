@@ -9,8 +9,9 @@
 #import "ExportCardController.h"
 #import "ExportArrayDataSource.h"
 #import "WDSearchTableView.h"
+#import "Card.h"
 
-@interface ExportCardController ()
+@interface ExportCardController ()<WDSearchTableViewDelegate>
 
 @property(nonatomic,strong) ExportArrayDataSource* dataSource;
 @property(nonatomic,weak) WDSearchTableView* searchTable;
@@ -30,15 +31,11 @@
 
 -(void) setDataSourceObj:(id)obj{
     self.dataSource = obj;
-    NSLog(@"hihi");
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.searchTable = [self.childViewControllers firstObject];
-    NSAssert(self.dataSource != nil, @"search table datasource cannot be nil");
-    self.searchTable.tableView.dataSource = self.dataSource;
 }
 
 - (void)didReceiveMemoryWarning
@@ -55,15 +52,27 @@
     [self.delegate exportCardController:self didImportDatas:nil];
 }
 
-/*
+#pragma mark - WDSearchTableView Delegate
+-(void) wdsearchview:(WDSearchTableView *)searchview didSelectWithItem:(id)item{
+    //do some export logic here
+    [self.delegate exportCardController:self didImportDatas:item];
+}
+
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if ([segue.identifier isEqualToString:@"ExportEmbed"]){
+        WDSearchTableView* searchController = segue.destinationViewController;
+        searchController.delegate = self;
+        NSAssert(self.dataSource != nil, @"search table datasource cannot be nil");
+        searchController.tableView.dataSource = self.dataSource;
+        self.dataSource.target = searchController;
+        searchController.searchDisplayController.searchResultsDataSource = self.dataSource;
+    }
 }
-*/
+
 
 @end

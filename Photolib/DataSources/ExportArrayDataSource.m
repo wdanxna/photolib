@@ -11,6 +11,7 @@
 
 @interface ExportArrayDataSource()
 @property(nonatomic,strong) NSArray* sections;
+@property (nonatomic,strong) NSMutableArray* searchArray;
 @property(nonatomic,strong) NSString* cellIdentifier;
 @property(nonatomic, copy) TableViewCellConfigureBlock configureCellBlock;
 @end
@@ -19,6 +20,7 @@
     NSMutableArray* _valid_section_index;
 }
 
+@synthesize target;
 -(NSArray*)items{
     return self.sections;
 }
@@ -69,18 +71,48 @@
     return [self.sections[indexPath.section] objectAtIndex:indexPath.row];
 }
 
+-(id) itemAtSearchResult:(NSIndexPath*)indexPath{
+    return self.searchArray[indexPath.row];
+}
+
+#pragma mark -
+#pragma mark - search content filter
+-(void) filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope{
+    NSArray* dataSource = [self.sections mutableCopy];
+    NSMutableArray* flattenSets = [[NSMutableArray alloc] initWithCapacity:dataSource.count];
+    
+    for (NSArray* section in dataSource){
+        if (section.count > 0){
+            [flattenSets addObjectsFromArray:section];
+        }
+    }
+    self.searchArray = flattenSets;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF.name contains[c] %@",searchText];
+    self.searchArray = [NSMutableArray arrayWithArray:[self.searchArray filteredArrayUsingPredicate:predicate]];
+}
+
+#pragma mark -
 #pragma mark - tableView dataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if (tableView == self.target.searchDisplayController.searchResultsTableView){
+        return 1;
+    }
     return self.sections.count;
 }
 
 -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (tableView == self.target.searchDisplayController.searchResultsTableView){
+        return self.searchArray.count;
+    }
     NSArray* rows = [self.sections objectAtIndex:section];
     return rows.count;
 }
 
 -(NSString*) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    if (tableView == self.target.searchDisplayController.searchResultsTableView){
+        return nil;
+    }
     if ([self tableView:tableView numberOfRowsInSection:section] < 1) return nil;
     //don't forget to shift it back
     int validSection = section;
@@ -89,6 +121,9 @@
 }
 
 -(NSArray*) sectionIndexTitlesForTableView:(UITableView *)tableView{
+    if (tableView == self.target.searchDisplayController.searchResultsTableView){
+        return nil;
+    }
     NSMutableArray* titles = [[NSMutableArray alloc] initWithCapacity:_valid_section_index.count + 1];
     [titles addObject:UITableViewIndexSearch];
     NSArray* raw = [[UILocalizedIndexedCollation currentCollation] sectionIndexTitles];
@@ -102,6 +137,9 @@
 sectionForSectionIndexTitle:(NSString *)title
                atIndex:(NSInteger)index
 {
+    if (tableView == self.target.searchDisplayController.searchResultsTableView){
+        return 0;
+    }
     if (index == 0){
         return -1;
     }
@@ -110,10 +148,16 @@ sectionForSectionIndexTitle:(NSString *)title
 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell* cell;
+    id item;
+    if (tableView == self.target.searchDisplayController.searchResultsTableView){
+        cell = [self.target.tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+        item = [self itemAtSearchResult:indexPath];
+    }else{
+        cell = [self.target.tableView dequeueReusableCellWithIdentifier:self.cellIdentifier forIndexPath:indexPath];
+        item = [self itemAtIndex:indexPath];
+    }
     
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier forIndexPath:indexPath];
-    
-    id item = [self itemAtIndex:indexPath];
     self.configureCellBlock(cell, item);
     return cell;
 }

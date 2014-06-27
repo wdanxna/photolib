@@ -7,10 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+@class WDSearchTableView;
+@protocol WDSearchTableViewDelegate <NSObject>
+
+-(void) wdsearchview:(WDSearchTableView*)searchview didSelectWithItem:(id)item;
+
+@end
 
 @interface WDSearchTableView : UITableViewController
 
-//-(void) setObjects:(NSArray*)objects;
-
-
+@property(nonatomic,strong) id<WDSearchTableViewDelegate> delegate;
 @end

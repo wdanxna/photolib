@@ -8,16 +8,14 @@
 
 #import "WDSearchTableView.h"
 #import "ExportArrayDataSource.h"
+#import "Card.h"
 
 @interface WDSearchTableView ()<UISearchBarDelegate,UISearchDisplayDelegate>
-@property(nonatomic,strong) NSArray* sections;
-@property (strong, nonatomic) IBOutlet UISearchDisplayController *searchController;
-@property (nonatomic,strong) NSMutableArray* searchArray;
 
-@end
+@end    
 
 @implementation WDSearchTableView
-
+@synthesize delegate;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -38,13 +36,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-//    [self setAutomaticallyAdjustsScrollViewInsets:YES];
-//    [self setExtendedLayoutIncludesOpaqueBars:YES];
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 #pragma mark - search display
@@ -59,32 +50,8 @@
     self.navigationController.navigationBarHidden = NO;
 }
 
-#pragma mark -
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
--(NSArray*) getDataSource{
-    NSArray* dataSource = [((ExportArrayDataSource*)self.tableView.dataSource) items];
-    NSMutableArray* flattenSets = [[NSMutableArray alloc] initWithCapacity:dataSource.count];
-    
-    for (NSArray* section in dataSource){
-        if (section.count > 0){
-            [flattenSets addObjectsFromArray:section];
-        }
-    }
-    return flattenSets;
-}
-
-#pragma mark -
--(void) filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope{
-    self.searchArray = [[self getDataSource] mutableCopy];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF.name contains[c] %@",searchText];
-    self.searchArray = [NSMutableArray arrayWithArray:[self.searchArray filteredArrayUsingPredicate:predicate]];
-    NSLog(@"xxx");
+-(ExportArrayDataSource*) dataSource{
+    return self.tableView.dataSource;
 }
 
 #pragma mark - Tableview delegate
@@ -93,10 +60,25 @@
     return 65;
 }
 
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    Card* selectedItem;
+    if (tableView == self.searchDisplayController.searchResultsTableView){
+        NSLog(@"searched: %d",indexPath.row);
+        selectedItem = [[self dataSource] itemAtSearchResult:indexPath];
+    }else{
+        NSLog(@"normal: %@", indexPath);
+        selectedItem = [[self dataSource] itemAtIndex:indexPath];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(wdsearchview:didSelectWithItem:)]){
+        [self.delegate wdsearchview:self didSelectWithItem:selectedItem];
+    }
+}
+
 #pragma mark -
 #pragma mark - UISearchDisplayController Delegate Methods
 -(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString {
-    [self filterContentForSearchText:searchString scope:nil];
+    [[self dataSource] filterContentForSearchText:searchString scope:nil];
     return YES;
 }
 
@@ -107,43 +89,7 @@
 //    return YES;
 //}
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 /*
 #pragma mark - Navigation
@@ -155,5 +101,14 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+#pragma mark -
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
 
 @end

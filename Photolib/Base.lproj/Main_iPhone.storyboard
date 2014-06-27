@@ -145,7 +145,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="rMg-B5-BRY" kind="embed" id="wFO-6M-Qli"/>
+                                    <segue destination="rMg-B5-BRY" kind="embed" identifier="ExportEmbed" id="wFO-6M-Qli"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -212,7 +212,6 @@
                         </connections>
                     </tableView>
                     <connections>
-                        <outlet property="searchController" destination="fNt-1h-OdS" id="aWp-bT-B8Q"/>
                         <outlet property="searchDisplayController" destination="fNt-1h-OdS" id="JBO-7d-OA4"/>
                     </connections>
                 </tableViewController>
@@ -222,7 +221,6 @@
                         <outlet property="delegate" destination="rMg-B5-BRY" id="vUh-K7-qOi"/>
                         <outlet property="searchBar" destination="psq-bl-ZcQ" id="bCx-rt-8Go"/>
                         <outlet property="searchContentsController" destination="rMg-B5-BRY" id="UZO-fH-i6e"/>
-                        <outlet property="searchResultsDataSource" destination="rMg-B5-BRY" id="Y2B-Tg-RGb"/>
                         <outlet property="searchResultsDelegate" destination="rMg-B5-BRY" id="yuN-w8-BzK"/>
                     </connections>
                 </searchDisplayController>
