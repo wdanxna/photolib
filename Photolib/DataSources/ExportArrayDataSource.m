@@ -47,10 +47,10 @@
     _valid_section_index = [[NSMutableArray alloc] initWithCapacity:sectionTitlesCount];
     for (Card* object in objects){
         NSInteger sectionNumber = [[UILocalizedIndexedCollation currentCollation] sectionForObject:object collationStringSelector:selector];
+        // For traditional chinese, there is a mismatch between sectionTitles and sectionIndexTitle, which the first one has 37 strange
+        // characters index ranging from 25 to 61.
+        if (sectionNumber > 61) sectionNumber -= 37;
         if (((NSArray*)[mutableSections objectAtIndex:sectionNumber]).count == 0){
-            // For traditional chinese, there is a mismatch between sectionTitles and sectionIndexTitle, which the first one has 37 strange
-            // characters index ranging from 25 to 61.
-            if (sectionNumber > 61) sectionNumber -= 37;
             [_valid_section_index addObject:[NSNumber numberWithInt:sectionNumber]];
         }
         [[mutableSections objectAtIndex:sectionNumber] addObject:object];

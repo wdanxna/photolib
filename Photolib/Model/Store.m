@@ -82,7 +82,10 @@
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.albums.count];
     for (NSString* path in self.albums){
         NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
-        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path] thumb:nil thumbPath:[self thumbpath] name:name album:YES];
+        NSMutableArray* mutComs = [[path componentsSeparatedByString:@"/"] mutableCopy];
+        [mutComs insertObject:@"thumbnails" atIndex:mutComs.count-1];
+        NSString* thumbPath = [[mutComs componentsJoinedByString:@"/"] stringByAppendingPathExtension:@"jpg"];
+        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path] thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name album:YES];
         [result addObject:newCard];
     }
     return result;
@@ -93,8 +96,11 @@
     for (NSString* path in self.photos){
         NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
         NSString* downloadPahth = [path stringByAppendingPathExtension:@"jpg"];
+        NSMutableArray* mutComs = [[downloadPahth componentsSeparatedByString:@"/"] mutableCopy];
+        [mutComs insertObject:@"thumbnails" atIndex:mutComs.count-1];
+        NSString* thumbPath = [mutComs componentsJoinedByString:@"/"];
         downloadPahth = [self imageDownloadPathWithPath:downloadPahth];
-        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbpath] name:name album:NO];
+        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name album:NO];
         [result addObject:photo];
     }
     return result;
@@ -272,6 +278,7 @@
             [_mutableData setValue:_curlevelDic forKeyPath:[self path2IndexPaths:_curlevelPath]];
             self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
             self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+            self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             callback(connectionError, [self dataWithPath:_curlevelPath]);
@@ -283,9 +290,14 @@
 -(void) moveItemWithName:(NSArray*)names
                   toPath:(NSString*)path
                 complete:(void (^)(NSError* error))callback{
-    
+
     NSMutableDictionary* moveParam = [[NSMutableDictionary alloc] initWithCapacity:names.count];
+    NSMutableArray* validNames = [NSMutableArray arrayWithArray:names];
     for (NSString* name in names){
+        if ([[_curlevelPath stringByAppendingPathComponent:name] isEqualToString:path]){
+            [validNames removeObject:name];
+            continue;
+        }
         NSString* srcPath = [_curlevelPath stringByAppendingPathComponent:name];
         NSString* dstPath = [path stringByAppendingPathComponent:name];
         
@@ -300,11 +312,14 @@
         
         [moveParam setObject:valid_dstPath forKey:valid_srcPath];
     }
-    
+    if (moveParam.count == 0){
+        callback(nil);
+        return;
+    }
     HTTPPostRequest* moveRequest = [[HTTPPostRequest alloc] initWithURLString:[self rest_api_with:@"move"] parameters:moveParam];
     [moveRequest startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         if (!connectionError){
-            for (NSString* name in names){
+            for (NSString* name in validNames){
                 NSMutableArray* item = [_curlevelDic[@"content"] objectForKey:name];
                 [_curlevelDic[@"content"] removeObjectForKey:name];
                 [_mutableData setValue:_curlevelDic forKeyPath:[self path2IndexPaths:_curlevelPath]];
@@ -312,8 +327,6 @@
                 destIndexPath = [destIndexPath stringByAppendingFormat:@".%@",name];
                 [_mutableData setValue:item forKeyPath:destIndexPath];
                 self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
-                self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
-                self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards "] atPath:@"BusinessCards"];
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -323,30 +336,60 @@
 }
 
 -(void) replaceItemAtPath:(NSString *)path toNewPath:(NSString*)newPath withData:(NSDictionary *)newData complete:(void (^)(NSError *))callback{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        //
-        NSString* keyPath = [self path2IndexPaths:path];
-        NSMutableDictionary* selected = [self deepMutableCopy:[self.rawData valueForKeyPath:keyPath]];
-        for (NSString* key in newData){
-            if (selected[key]){
-                selected[key] = newData[key];
-            }
-        }
-        NSMutableArray* sepPath = [[path componentsSeparatedByString:@"/"] mutableCopy];
-        int pathLen = sepPath.count;
-        NSString* tailKeyPath = [self path2IndexPathsContent:[[sepPath subarrayWithRange:(NSRange){0,pathLen-1}] componentsJoinedByString:@"/"]];
-        NSMutableDictionary* tailed = [_mutableData valueForKeyPath:tailKeyPath];
-        [tailed removeObjectForKey:[sepPath lastObject]];
+    
+    NSDictionary* selected = _curlevelDic[@"content"][[path lastPathComponent]];
+    NSString* oldPath = path;
+    NSString* oldThumb;
+    NSMutableArray* mutThumb = [[oldPath componentsSeparatedByString:@"/"] mutableCopy];
+    [mutThumb insertObject:@"thumbnails" atIndex:mutThumb.count-1];
+    oldThumb = [mutThumb componentsJoinedByString:@"/"];
+    
+    NSString* aNewPath = newPath;
+    NSString* newThumb;
+    mutThumb = [[newPath componentsSeparatedByString:@"/"] mutableCopy];
+    [mutThumb insertObject:@"thumbnails" atIndex:mutThumb.count-1];
+    newThumb = [mutThumb componentsJoinedByString:@"/"];
+    
+    newThumb = [newThumb stringByAppendingPathExtension:@"jpg"];
+    oldThumb = [oldThumb stringByAppendingPathExtension:@"jpg"];
+    
+    if (!selected[@"content"]){
+        aNewPath = [newPath stringByAppendingPathExtension:@"jpg"];
+        oldPath = [oldPath stringByAppendingPathExtension:@"jpg"];
         
-        [_mutableData setValue:selected forKeyPath:[self path2IndexPaths:newPath]];
-        self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
-        self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
-        self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
-        sleep(0.5);
+    }
+    oldPath = [oldPath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    aNewPath = [aNewPath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    oldThumb = [oldThumb stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    newThumb = [newThumb stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    NSDictionary* editParam = @{oldPath:aNewPath, oldThumb:newThumb};
+    
+    HTTPPostRequest* editRequest = [[HTTPPostRequest alloc] initWithURLString:[self rest_api_with:@"rename"] parameters:editParam];
+    [editRequest startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (!connectionError){
+            NSString* keyPath = [self path2IndexPaths:path];
+            NSMutableDictionary* selected = [self deepMutableCopy:[self.rawData valueForKeyPath:keyPath]];
+            for (NSString* key in newData){
+                if (selected[key]){
+                    selected[key] = newData[key];
+                }
+            }
+            NSMutableArray* sepPath = [[path componentsSeparatedByString:@"/"] mutableCopy];
+            int pathLen = sepPath.count;
+            NSString* tailKeyPath = [self path2IndexPathsContent:[[sepPath subarrayWithRange:(NSRange){0,pathLen-1}] componentsJoinedByString:@"/"]];
+            NSMutableDictionary* tailed = [_mutableData valueForKeyPath:tailKeyPath];
+            [tailed removeObjectForKey:[sepPath lastObject]];
+            
+            [_mutableData setValue:selected forKeyPath:[self path2IndexPaths:newPath]];
+            self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+            self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+            self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
-            callback(nil);
+            callback(connectionError);
         });
-    });
+    }];
 }
 
 -(void) addPhotoAtPath:(NSString *)path
@@ -385,11 +428,6 @@
             }];
         });
     });
-}
-
--(void) didReceivePieceData: (HTTPRequestBase*)request data:(NSData*)data
-{
-    
 }
 
 -(NSMutableDictionary*) deepMutableCopy:(NSDictionary*)dict{

@@ -1,3 +1,4 @@
+
 //
 //  MainViewController.m
 //  Photolib
@@ -329,6 +330,11 @@
     exportController.delegate = self;
     exportController.moves = [NSArray arrayWithArray:_currentSelectedModel];
     NSArray* albums = [[AppDelegate sharedDelegate].Store getAlbums];
+//    NSMutableArray* validAlbums = [[NSMutableArray alloc] initWithCapacity:albums.count - _currentSelectedModel.count];
+//    for (Card* album in albums){
+//        if ([album.name isEqualToString:((Card*)_currentSelectedModel[0]).name])
+//            [albums removeObject:album];
+//    }
     self.exportArrayDataSource = [[ExportArrayDataSource alloc] initWithItems:albums
                                                                cellIdentifier:@"ExportAlbumCell"
                                                            configureCellBlock:^(id cell, id item) {

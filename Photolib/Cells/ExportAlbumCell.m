@@ -27,7 +27,7 @@
 }
 
 -(void) configureCell:(id)item{
-    [self.thumb setImageWithURL:((Card*)item).thumb_path placeholderImage:nil];
+    [self.thumb setImageWithURL:((Card*)item).thumb_path placeholderImage:nil options:SDWebImageRetryFailed];
     self.title.text = ((Card*) item).name;
 }
 
