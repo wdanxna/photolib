@@ -327,6 +327,10 @@
                 destIndexPath = [destIndexPath stringByAppendingFormat:@".%@",name];
                 [_mutableData setValue:item forKeyPath:destIndexPath];
                 self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+                //update these 2 is critical, even we don't do any add/remove operation. because the file structure
+                //might be changed, that means PATH is out of date, so we need to update it here.
+                self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+                self.photos = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
