@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>045416FC-5713-48AD-AC04-AD4A03C52802</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Photolib</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>856803DC-16BC-4F3A-8C0C-6C7C729D4EE8</key>
+		<string>https://github.com/wdanxna/photolib.git</string>
+		<key>BA154426-76AE-4F72-84E5-B8672EA8B732</key>
+		<string>https://github.com/mwaterfall/MWPhotoBrowser.git</string>
+		<key>FB81D8AC-E8E0-489B-9B45-575F541FBA46</key>
+		<string>https://github.com/wdanxna/Modules.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Photolib.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>856803DC-16BC-4F3A-8C0C-6C7C729D4EE8</key>
+		<string>../..</string>
+		<key>BA154426-76AE-4F72-84E5-B8672EA8B732</key>
+		<string>../../third_parts/MWPhotoBrowser</string>
+		<key>FB81D8AC-E8E0-489B-9B45-575F541FBA46</key>
+		<string>../../../../Workspaces/Modules</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/wdanxna/photolib.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>856803DC-16BC-4F3A-8C0C-6C7C729D4EE8</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>FB81D8AC-E8E0-489B-9B45-575F541FBA46</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Modules</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>BA154426-76AE-4F72-84E5-B8672EA8B732</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MWPhotoBrowser</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>856803DC-16BC-4F3A-8C0C-6C7C729D4EE8</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Photolib</string>
+		</dict>
+	</array>
+</dict>
+</plist>

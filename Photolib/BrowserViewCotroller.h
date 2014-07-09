@@ -11,7 +11,8 @@
 @class BrowserViewCotroller;
 @protocol WDBrowserDelegate <NSObject>
 
--(void) WDBrowser:(BrowserViewCotroller *)browser didSelectItemAtIndex:(NSInteger)index;
+-(void) WDBrowser:(BrowserViewCotroller *)browser didSelectItemAtIndex:(NSIndexPath*)index;
+-(void) WDBrowser:(BrowserViewCotroller *)browser didDeselectItemAtIndex:(NSIndexPath*)index;
 
 -(void) WDBrowser:(BrowserViewCotroller *)browser didViewPhotoAtIndex:(NSInteger)index;
 -(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path isRoot:(BOOL)root;

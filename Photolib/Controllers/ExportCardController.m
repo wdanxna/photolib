@@ -10,6 +10,8 @@
 #import "ExportArrayDataSource.h"
 #import "WDSearchTableView.h"
 #import "Card.h"
+#import "AppDelegate.h"
+#import "MBProgressHUD.h"
 
 @interface ExportCardController ()<WDSearchTableViewDelegate>
 
@@ -20,6 +22,7 @@
 
 @implementation ExportCardController
 @synthesize delegate;
+@synthesize moves;
 
 -(id) initWithCoder:(NSCoder *)aDecoder{
     self = [super initWithCoder:aDecoder];
@@ -49,13 +52,11 @@
 }
 
 - (IBAction)doneAction:(id)sender {
-    [self.delegate exportCardController:self didImportDatas:nil];
 }
 
 #pragma mark - WDSearchTableView Delegate
 -(void) wdsearchview:(WDSearchTableView *)searchview didSelectWithItem:(id)item{
-    //do some export logic here
-    [self.delegate exportCardController:self didImportDatas:item];
+    [self.delegate exportCardController:self didExportToItem:item];
 }
 
 

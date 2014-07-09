@@ -18,8 +18,11 @@
 @property(nonatomic,strong)NSString* name;
 @property(nonatomic,strong)NSString* password;
 @property(nonatomic,assign)BOOL isAlbum;
+@property(nonatomic,strong) NSDate* date;
 
 -(id)initWithPath:(NSURL*)path thumb:(UIImage*)image thumbPath:(NSURL*)thumbPath name:(NSString*)name album:(BOOL)album;
+
+-(NSDictionary*) photoToDictionary;
 
 -(NSString*) localizedTitle;
 

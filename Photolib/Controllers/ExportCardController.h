@@ -12,13 +12,17 @@
 @protocol ExportCardProtocol <NSObject>
 
 -(void) exportCardControllerDidCancle:(ExportCardController*)controller;
--(void) exportCardController:(ExportCardController*)controller didImportDatas:(NSArray*)datas;
+-(void) exportCardController:(ExportCardController*)controller didExportToItem:(id)item;
 
 @end
 
 @interface ExportCardController : UIViewController
 
+/* model objects selected to be moved. */
+@property(nonatomic,strong) NSArray* moves;
+
 @property(nonatomic, strong) id<ExportCardProtocol> delegate;
+
 -(void) setDataSourceObj:(id)obj;
 
 @end

@@ -48,6 +48,7 @@
 -(void) changeSelection:(BOOL)selected onCell:(UICollectionViewCell *)cell{
     NSIndexPath* indexpath = [self.collectionView indexPathForCell:cell];
     [self.collectionView deselectItemAtIndexPath:indexpath animated:NO];
+    [self collectionView:self.collectionView didDeselectItemAtIndexPath:indexpath];
 }
 
 -(void) enterCell:(UICollectionViewCell *)cell{
@@ -62,12 +63,12 @@
 
 #pragma mark - CollectionView Delegate
 -(void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    Card* current_data = [((DictionaryDataSource*)self.collectionView.dataSource) itemAtIndex:indexPath];
-//    if (current_data.isAlbum){
-//        [self enterAlbumWithData:current_data atIndexPath:indexPath];
-//    }else {
-//        [self viewPhotoWithData:current_data atIndexPath:indexPath];
-//    }
+//    Card* current_data = [((DictionaryDataSource*)self.collectionView.dataSource) itemAtIndex:indexPath];
+    [self.delegate WDBrowser:self didSelectItemAtIndex:indexPath];
+}
+
+-(void) collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath{
+    [self.delegate WDBrowser:self didDeselectItemAtIndex:indexPath];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
@@ -81,7 +82,8 @@
 //    if (self.delegate && [self.delegate conformsToProtocol:@protocol(WDBrowserDelegate)]){
 //        [self.delegate WDBrowser:self didEnterFolder:data.path.path];
 //    }
-    [self pushPath:data.path.path];
+    NSString* pushPath = [self.current_path stringByAppendingPathComponent:data.name];
+    [self pushPath:pushPath];
 }
 
 -(void) viewPhotoWithData:(Card*)data atIndexPath:(NSIndexPath*)indexPath{

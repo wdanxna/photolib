@@ -8,6 +8,11 @@
 
 #import "Store.h"
 #import "Card.h"
+#import "SDWebImageManager.h"
+
+#import "_HTTP.h"
+
+#define test_ip @"http:///192.168.0.202:8051/service/"
 
 @interface Store()
 @property (nonatomic,strong) NSDictionary* rawData;
@@ -28,26 +33,47 @@
 -(id) init{
     self = [super init];
     if (self){
-//        self.rawData = [[NSMutableDictionary alloc] init];
-        NSString* json = @"{\"BusinessCards\":{\"date\":null,\"path\":\"BusinessCards\",\"pwd\":null,\"content\":{\"Tough\":{\"date\":null,\"path\":\"BusinessCards/Tough\",\"pwd\":null,\"content\":{\"Gogo\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"Gogo\"}},\"name\":\"Tough\"},\"nihao\":{\"date\":null,\"path\":\"BusinessCards/nihao\",\"pwd\":null,\"content\":{\"Paper\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg\",\"pwd\":null,\"name\":\"Paper\"},\"笔记\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"笔记\"}},\"name\":\"nihao\"},\"这是二\":{\"date\":null,\"path\":\"BusinessCards/这是二\",\"pwd\":null,\"content\":{\"Desjk\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"Desjk\"},\"亨利下\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"亨利下\"},\"封面\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"封面\"},\"胡健聪\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg\",\"pwd\":null,\"name\":\"胡健聪\"},\"粗糙\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"粗糙\"}},\"name\":\"这是二\"},\"魔法\":{\"date\":null,\"path\":\"BusinessCards/魔法\",\"pwd\":null,\"content\":{\"封面\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"封面\"},\"我擦\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg\",\"pwd\":null,\"name\":\"我擦\"},\"Sicp\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/test.jpg\",\"pwd\":null,\"name\":\"Sicp\"},\"Kkk\":{\"date\":null,\"path\":\"https://dl.dropboxusercontent.com/u/75635128/roaringwave.jpg\",\"pwd\":null,\"name\":\"Kkk\"}},\"name\":\"魔法\"}},\"name\":\"BusinessCards\"}}";
-        
-        self.rawData = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
-        self.albums = [self allAlbums:self.rawData[@"BusinessCards"]];
-        _mutableData = [self deepMutableCopy:self.rawData];
-        _curlevelDic = [[NSMutableDictionary alloc] init];
-        _curAlbums = [[NSMutableArray alloc] init];
-        _curPhotos = [[NSMutableArray alloc] init];
-        NSLog(@"haha");
     }
     return self;
 }
 
--(NSArray*)allAlbums:(NSDictionary*)data{
-    if (!data[@"content"]) return nil;
+-(void)initiateWithComplete:(void(^)(NSError* error))callback{
+    //start request
+    HTTPPostRequest* request = [[HTTPPostRequest alloc] initWithURLString:[self rest_api_with:@"struct"] parameters:@{}];
+    [request startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (!connectionError){
+            self.rawData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+            self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+            self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+            _mutableData = [self deepMutableCopy:self.rawData];
+            _curlevelDic = [[NSMutableDictionary alloc] init];
+            _curAlbums = [[NSMutableArray alloc] init];
+            _curPhotos = [[NSMutableArray alloc] init];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(connectionError);
+        });
+    }];
+}
+
+-(NSArray*) allPhotosInDic:(NSDictionary*)data atPath:(NSString*)path{
     NSMutableArray* result = [[NSMutableArray alloc] init];
-    [result addObject:data[@"path"]];
+    if (data[@"content"]){
+        for (NSString* key in data[@"content"]){
+            [result addObjectsFromArray:[self allPhotosInDic:data[@"content"][key] atPath:[path stringByAppendingPathComponent:key]]];
+        }
+    }else{
+        [result addObject:path];
+    }
+    return result;
+}
+
+-(NSArray*) allAlbumsInDic:(NSDictionary*)data atPath:(NSString*)path{
+    if (!data[@"content"])return nil;
+    NSMutableArray* result = [[NSMutableArray alloc] init];
+    [result addObject:path];
     for (NSString* key in data[@"content"]){
-        [result addObjectsFromArray:[self allAlbums:data[@"content"][key]]];
+        [result addObjectsFromArray:[self allAlbumsInDic:data[@"content"][key] atPath:[path stringByAppendingPathComponent:key]]];
     }
     return result;
 }
@@ -60,6 +86,26 @@
         [result addObject:newCard];
     }
     return result;
+}
+
+-(NSArray*)getPhotos{
+    NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.photos.count];
+    for (NSString* path in self.photos){
+        NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
+        NSString* downloadPahth = [path stringByAppendingPathExtension:@"jpg"];
+        downloadPahth = [self imageDownloadPathWithPath:downloadPahth];
+        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbpath] name:name album:NO];
+        [result addObject:photo];
+    }
+    return result;
+}
+
+-(BOOL) hasAlbumInPath:(NSString *)path{
+    NSString* keyPath = [self path2IndexPaths:path];
+    if ([self.rawData valueForKeyPath:keyPath]){
+        return YES;
+    }
+    return NO;
 }
 
 -(NSURL*)thumbpath{
@@ -78,6 +124,11 @@
     _curlevelPath = path;
     NSString* validPath = [self path2IndexPaths:path];
     NSDictionary* cur_level_temp = [self.rawData valueForKeyPath:validPath];
+    if (!cur_level_temp) {
+        [_curAlbums removeAllObjects];
+        [_curPhotos removeAllObjects];
+        return nil;
+    }
     _curlevelDic = [self deepMutableCopy:cur_level_temp];
     if (_curlevelDic && _curlevelDic[@"content"]){
         NSDictionary* contents = _curlevelDic[@"content"];
@@ -88,9 +139,23 @@
             if (item){
                 BOOL isalbum = item[@"content"]?YES:NO;
                 __weak NSMutableArray* whichToInsert = isalbum?_curAlbums:_curPhotos;
-//                UIImage* thumb = [self getThumbWithPath:item[@"path"]];
-                NSURL* imagePath = [self nsurlWithPath:item[@"path"]];
-                Card* insertone = [[Card alloc] initWithPath:imagePath thumb:nil thumbPath:[self thumbpath] name:item[@"name"] album:isalbum];
+
+                NSString* enterPath = [path stringByAppendingPathComponent:key];
+                
+                NSString* thumbPath;
+                //thumbnial path
+                NSMutableArray* mutableThumbComps = [[enterPath componentsSeparatedByString:@"/"] mutableCopy];
+                [mutableThumbComps insertObject:@"thumbnails" atIndex:mutableThumbComps.count-1];
+                
+                if (!isalbum){
+                    enterPath = [enterPath stringByAppendingPathExtension:@"jpg"];
+                    enterPath = [self imageDownloadPathWithPath:enterPath];
+                }
+                thumbPath = [self thumbnailDownloadPathWithPath:[[mutableThumbComps componentsJoinedByString:@"/"] stringByAppendingPathExtension:@"jpg"]];
+                
+                
+                Card* insertone = [[Card alloc] initWithPath:enterPath thumb:nil thumbPath:thumbPath name:item[@"name"] album:isalbum];
+                
                 [whichToInsert
                  addObject:insertone];
             }
@@ -98,6 +163,22 @@
     }
     return @{@"AlbumCell":_curAlbums,
              @"PhotoCell":_curPhotos};
+}
+
+-(NSString*) urlWithAPI:(NSString*)api withPath:(NSString*)path{
+    return [NSString stringWithFormat:@"%@?%@",[self rest_api_with:api], path];
+}
+
+-(NSString*) imageDownloadPathWithPath:(NSString*)path{
+    return [self urlWithAPI:@"download" withPath:path];
+}
+
+-(NSString*) thumbnailDownloadPathWithPath:(NSString*)path{
+    return [self urlWithAPI:@"getthumbnails" withPath:path];
+}
+
+-(NSString*) rest_api_with:(NSString*)api{
+    return [test_ip stringByAppendingPathComponent:api];
 }
 
 -(NSDictionary*) currentLevelData{
@@ -114,6 +195,11 @@
     return indexPaths;
 }
 
+-(NSString*) path2IndexPathsContent:(NSString*)path{
+    NSString* p = [self path2IndexPaths:path];
+    return [p stringByAppendingString:@".content"];
+}
+
 -(NSURL*) nsurlWithPath:(NSString*)path{
 //    return [NSURL URLWithString:@"https://dl.dropboxusercontent.com/u/75635128/SouthPark.jpg"];
     path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -124,9 +210,7 @@
     return [[self.rawData allKeys] firstObject];
 }
 
--(NSDictionary*)dataAtFirstLevel{
-    return [self dataWithPath:[self rootPath]];
-}
+
 
 
 -(NSArray*) photosArray{
@@ -139,34 +223,173 @@
 
 
 -(void) createAlbumAtPath:(NSString*)path name:(NSString*)name passwd:(NSString*)passwd complete:(createAlbumCallback)callback{
+    
     NSString* encodedPath = [[path stringByAppendingPathComponent:name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:encodedPath] thumb:nil thumbPath:[self thumbpath] name:name album:YES];
-    NSError* error = nil;
-    //do some request here
-    [_curAlbums addObject:newAlbum];
-    NSDictionary* temp = @{@"name":newAlbum.name,
-                           @"path":newAlbum.path.path,
-                           @"pwd":newAlbum.password,
-                           @"date":[NSNull null],
-                           @"content":@{}};
-    NSMutableDictionary* mut_new = [self deepMutableCopy:temp];
-    
-    [_curlevelDic setValue:mut_new forKeyPath:[NSString stringWithFormat:@"content.%@",name]];
-    
-    NSString* newIndexPaths = [self path2IndexPaths:_curlevelPath];
-//    newIndexPaths = [NSString stringWithFormat:@"%@.content",newIndexPaths];
-    [_mutableData setValue:_curlevelDic forKeyPath:newIndexPaths];
-    self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
-    self.albums = [self allAlbums:self.rawData[@"BusinessCards"]];
-    callback(error, [self dataWithPath:_curlevelPath]);
+    HTTPRequestBase* uploadRequest = [[HTTPPostRequest alloc]
+                                      initWithURLString:@"http://192.168.0.202:8051/service/newfolder"
+                                      parameters:@{@"path":encodedPath}];
+    [uploadRequest startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (!connectionError){
+            Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:encodedPath] thumb:nil thumbPath:[self thumbpath] name:name album:YES];
+            //do some request here
+            [_curAlbums addObject:newAlbum];
+            NSDictionary* temp = @{@"name":newAlbum.name,
+                                   @"path":newAlbum.path.path,
+                                   @"pwd":newAlbum.password,
+                                   @"date":[NSNull null],
+                                   @"content":@{}};
+            NSMutableDictionary* mut_new = [self deepMutableCopy:temp];
+            
+            [_curlevelDic setValue:mut_new forKeyPath:[NSString stringWithFormat:@"content.%@",name]];
+            
+            NSString* newIndexPaths = [self path2IndexPaths:_curlevelPath];
+            //    newIndexPaths = [NSString stringWithFormat:@"%@.content",newIndexPaths];
+            [_mutableData setValue:_curlevelDic forKeyPath:newIndexPaths];
+            self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+            self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(connectionError, [self dataWithPath:_curlevelPath]);
+        });
+        
+    }];
 }
 
 -(void) removeItemWithNames:(NSArray *)names complete:(deleteItemCallback)callback{
-    [_curlevelDic[@"content"] removeObjectsForKeys:names];
-    [_mutableData setValue:_curlevelDic forKeyPath:[self path2IndexPaths:_curlevelPath]];
-    self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
-    self.albums = [self allAlbums:self.rawData[@"BusinessCards"]];
-    callback(nil,[self dataWithPath:_curlevelPath]);
+    
+    NSMutableDictionary* deleteParams = [[NSMutableDictionary alloc] initWithCapacity:names.count];
+    for (NSString* name in names){
+        NSDictionary* delete = [_curlevelDic[@"content"] objectForKey:name];
+        NSString* delPath = [_curlevelPath stringByAppendingPathComponent:name];
+        if (!delete[@"content"])
+            delPath = [delPath stringByAppendingPathExtension:@"jpg"];
+        [deleteParams setObject:delPath forKey:name];
+    }
+    HTTPRequestBase* request = [[HTTPPostRequest alloc] initWithURLString:[self rest_api_with:@"delete"] parameters:deleteParams];
+    [request startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (! connectionError){
+            [_curlevelDic[@"content"] removeObjectsForKeys:names];
+            [_mutableData setValue:_curlevelDic forKeyPath:[self path2IndexPaths:_curlevelPath]];
+            self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+            self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(connectionError, [self dataWithPath:_curlevelPath]);
+        });
+    }];
+}
+
+
+-(void) moveItemWithName:(NSArray*)names
+                  toPath:(NSString*)path
+                complete:(void (^)(NSError* error))callback{
+    
+    NSMutableDictionary* moveParam = [[NSMutableDictionary alloc] initWithCapacity:names.count];
+    for (NSString* name in names){
+        NSString* srcPath = [_curlevelPath stringByAppendingPathComponent:name];
+        NSString* dstPath = [path stringByAppendingPathComponent:name];
+        
+        NSDictionary* theOne =  _curlevelDic[@"content"][name];
+        if (!theOne[@"content"]){//photo
+            srcPath = [srcPath stringByAppendingPathExtension:@"jpg"];
+            dstPath = [dstPath stringByAppendingPathExtension:@"jpg"];
+        }
+        
+        NSString* valid_srcPath = [srcPath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString* valid_dstPath = [dstPath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        [moveParam setObject:valid_dstPath forKey:valid_srcPath];
+    }
+    
+    HTTPPostRequest* moveRequest = [[HTTPPostRequest alloc] initWithURLString:[self rest_api_with:@"move"] parameters:moveParam];
+    [moveRequest startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (!connectionError){
+            for (NSString* name in names){
+                NSMutableArray* item = [_curlevelDic[@"content"] objectForKey:name];
+                [_curlevelDic[@"content"] removeObjectForKey:name];
+                [_mutableData setValue:_curlevelDic forKeyPath:[self path2IndexPaths:_curlevelPath]];
+                NSString* destIndexPath = [self path2IndexPathsContent:path];
+                destIndexPath = [destIndexPath stringByAppendingFormat:@".%@",name];
+                [_mutableData setValue:item forKeyPath:destIndexPath];
+                self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+                self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+                self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards "] atPath:@"BusinessCards"];
+            }
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(nil);
+        });
+    }];
+}
+
+-(void) replaceItemAtPath:(NSString *)path toNewPath:(NSString*)newPath withData:(NSDictionary *)newData complete:(void (^)(NSError *))callback{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        //
+        NSString* keyPath = [self path2IndexPaths:path];
+        NSMutableDictionary* selected = [self deepMutableCopy:[self.rawData valueForKeyPath:keyPath]];
+        for (NSString* key in newData){
+            if (selected[key]){
+                selected[key] = newData[key];
+            }
+        }
+        NSMutableArray* sepPath = [[path componentsSeparatedByString:@"/"] mutableCopy];
+        int pathLen = sepPath.count;
+        NSString* tailKeyPath = [self path2IndexPathsContent:[[sepPath subarrayWithRange:(NSRange){0,pathLen-1}] componentsJoinedByString:@"/"]];
+        NSMutableDictionary* tailed = [_mutableData valueForKeyPath:tailKeyPath];
+        [tailed removeObjectForKey:[sepPath lastObject]];
+        
+        [_mutableData setValue:selected forKeyPath:[self path2IndexPaths:newPath]];
+        self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+        self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+        self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+        sleep(0.5);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(nil);
+        });
+    });
+}
+
+-(void) addPhotoAtPath:(NSString *)path
+              withData:(NSData *)imageData
+              complete:(void (^)(NSError *, UIImage *))callback{
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        //compress image
+        UIImage* raw = [UIImage imageWithData:imageData];
+        NSData* compressedData = UIImageJPEGRepresentation(raw, 0.3);
+        UIImage* compressedImage = [UIImage imageWithData:compressedData];
+        
+        NSArray* sep = [path componentsSeparatedByString:@"/"];
+        NSString* fileName = [[path stringByAppendingPathExtension:@"jpg"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            HTTPRequestBase* request = [[HTTPUploader alloc] initWithURLString:@"http://192.168.0.202:8051/service/upload" parameters:@{UPLOAD_Data: compressedData, UPLOAD_FileName: fileName,UPLOAD_MIMEType: @"image/jpeg",UPLOAD_FormParameters: @{@"key": @"1"}}];
+            
+            [request startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                if (! connectionError){
+                    NSString* ownerKeyPath = [self path2IndexPaths:[[sep subarrayWithRange:(NSRange){0,sep.count - 1}] componentsJoinedByString:@"/"]];
+                    NSMutableDictionary* ownerValue = [_mutableData valueForKeyPath:ownerKeyPath];
+                    NSMutableDictionary* ownerContent = ownerValue[@"content"];
+                    
+                    
+                    NSDictionary* dict = @{@"name":[sep lastObject]};
+                    [ownerContent setValue:[dict mutableCopy] forKey:[sep lastObject]];
+                    
+                    self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
+                    self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+                    
+                    [[SDImageCache sharedImageCache] storeImage:compressedImage forKey:path];
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    callback(connectionError, compressedImage);
+                });
+            }];
+        });
+    });
+}
+
+-(void) didReceivePieceData: (HTTPRequestBase*)request data:(NSData*)data
+{
+    
 }
 
 -(NSMutableDictionary*) deepMutableCopy:(NSDictionary*)dict{
