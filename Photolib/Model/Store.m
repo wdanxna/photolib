@@ -78,6 +78,7 @@
     return result;
 }
 
+//note this method just use cached data(self.albums) to generate model objects, that means it might get out of date. use with caution.
 -(NSArray*)getAlbums{
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.albums.count];
     for (NSString* path in self.albums){
@@ -91,6 +92,7 @@
     return result;
 }
 
+// same as above
 -(NSArray*)getPhotos{
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.photos.count];
     for (NSString* path in self.photos){
@@ -327,10 +329,10 @@
                 destIndexPath = [destIndexPath stringByAppendingFormat:@".%@",name];
                 [_mutableData setValue:item forKeyPath:destIndexPath];
                 self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
-                //update these 2 is critical, even we don't do any add/remove operation. because the file structure
+                //update album & photo is critical, even if we don't do any add/remove operation. because the file structure
                 //might be changed, that means PATH is out of date, so we need to update it here.
                 self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
-                self.photos = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
+                self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{

@@ -245,7 +245,6 @@
 }
 
 -(void)imagePickerDidChooseImageWithPath:(NSString *)path{
-//    self.navigationController.navigationBarHidden = NO;
     [self.navigationController popToRootViewControllerAnimated:YES];
     _processedImageData = [NSData dataWithContentsOfFile:path];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
@@ -253,7 +252,6 @@
     popup.tag = 12345;
     popup.delegate = self;
     [popup showInView:self.view];
-//    [store addPotoWithData:imageMeta atPath:]
 }
 
 #pragma mark - 
@@ -271,9 +269,20 @@
                      withData:_processedImageData
                      complete:^(NSError* error, UIImage* image){
                          [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+                         if (error || image == nil){
+                             UIAlertView* failalert = [[UIAlertView alloc] initWithTitle:nil message:@"上传失败" delegate:self cancelButtonTitle:@"ok" otherButtonTitles:nil];
+                             [failalert show];
+                             return;
+                         }
+                         // refresh file structure
                          NSDictionary* data = [store dataWithPath:self.browser.current_path];
                          [self.browserDataSource updateItems:data];
                          [self.browser refresh];
+                         
+                         // refresh current photo data source
+                         NSArray* currentPhotos = [store photosArray];
+                         [self.photoDataSource updateItems:currentPhotos];
+                         [self.photoViewer reloadData];
         }];
     }
 }
@@ -330,11 +339,7 @@
     exportController.delegate = self;
     exportController.moves = [NSArray arrayWithArray:_currentSelectedModel];
     NSArray* albums = [[AppDelegate sharedDelegate].Store getAlbums];
-//    NSMutableArray* validAlbums = [[NSMutableArray alloc] initWithCapacity:albums.count - _currentSelectedModel.count];
-//    for (Card* album in albums){
-//        if ([album.name isEqualToString:((Card*)_currentSelectedModel[0]).name])
-//            [albums removeObject:album];
-//    }
+
     self.exportArrayDataSource = [[ExportArrayDataSource alloc] initWithItems:albums
                                                                cellIdentifier:@"ExportAlbumCell"
                                                            configureCellBlock:^(id cell, id item) {

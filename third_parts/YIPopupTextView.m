@@ -55,12 +55,17 @@
         [strokeColor setStroke];  
         CGContextSetLineWidth(context, IS_IPAD ? 6.0 : 3.0);  
         CGFloat lineLength  = radius/2.5;
-        CGContextMoveToPoint(context, cx-lineLength, cy-lineLength);
-        CGContextAddLineToPoint(context, cx+lineLength, cy+lineLength);
-        CGContextDrawPath(context, kCGPathFillStroke);
+//        CGContextMoveToPoint(context, cx-lineLength, cy-lineLength);
+//        CGContextAddLineToPoint(context, cx+lineLength, cy+lineLength);
+//        CGContextDrawPath(context, kCGPathFillStroke);
+//        
+//        CGContextMoveToPoint(context, cx+lineLength, cy-lineLength);
+//        CGContextAddLineToPoint(context, cx-lineLength, cy+lineLength);
+//        CGContextDrawPath(context, kCGPathFillStroke);
         
-        CGContextMoveToPoint(context, cx+lineLength, cy-lineLength);
-        CGContextAddLineToPoint(context, cx-lineLength, cy+lineLength);
+        CGContextMoveToPoint(context, cx-lineLength-2, cy+lineLength/2);
+        CGContextAddLineToPoint(context, cx, cy+lineLength);
+        CGContextAddLineToPoint(context, cx+lineLength, cy-lineLength);
         CGContextDrawPath(context, kCGPathFillStroke);
     }
     
@@ -148,7 +153,7 @@
         
         _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_closeButton setImage:[UIImage closeButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH) 
-                                                     strokeColor:[UIColor whiteColor] 
+                                                     strokeColor:[UIColor greenColor]
                                                        fillColor:[UIColor blackColor] 
                                                           shadow:NO] 
                       forState:UIControlStateNormal];
