@@ -79,6 +79,7 @@
 		497F9DDB1954121300C59399 /* PhotoDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 497F9DD91954121300C59399 /* PhotoDataSource.m */; };
 		497F9DDE195429AA00C59399 /* ExportArrayDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 497F9DDD195429AA00C59399 /* ExportArrayDataSource.m */; };
 		497F9DE11954351600C59399 /* ExportAlbumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 497F9DE01954351600C59399 /* ExportAlbumCell.m */; };
+		499EFEAA196E6F6600ABF211 /* exifTagger.m in Sources */ = {isa = PBXBuildFile; fileRef = 499EFEA9196E6F6600ABF211 /* exifTagger.m */; };
 		49BBF5D61963E6BB00E77379 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BBF5C91963E6BB00E77379 /* NSData+Base64.m */; };
 		49BBF5D71963E6BB00E77379 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BBF5CB1963E6BB00E77379 /* NSString+Base64.m */; };
 		49BBF5D81963E6BB00E77379 /* HTTPGetRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BBF5CF1963E6BB00E77379 /* HTTPGetRequest.m */; };
@@ -305,6 +306,8 @@
 		497F9DDD195429AA00C59399 /* ExportArrayDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportArrayDataSource.m; sourceTree = "<group>"; };
 		497F9DDF1954351600C59399 /* ExportAlbumCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAlbumCell.h; sourceTree = "<group>"; };
 		497F9DE01954351600C59399 /* ExportAlbumCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportAlbumCell.m; sourceTree = "<group>"; };
+		499EFEA8196E6F6600ABF211 /* exifTagger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exifTagger.h; sourceTree = "<group>"; };
+		499EFEA9196E6F6600ABF211 /* exifTagger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = exifTagger.m; sourceTree = "<group>"; };
 		49BBF5C71963E6BB00E77379 /* _Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _Base64.h; sourceTree = "<group>"; };
 		49BBF5C81963E6BB00E77379 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		49BBF5C91963E6BB00E77379 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
@@ -452,6 +455,7 @@
 		490B34B81945A16100B5A0F3 /* third_parts */ = {
 			isa = PBXGroup;
 			children = (
+				499EFEA7196E6F6600ABF211 /* photoTagger */,
 				49CA46DE1961051C00662C2A /* MAImagePickerController */,
 				49CA46D3195BF6C000662C2A /* SSTextView */,
 				49CA46D6195BF6C000662C2A /* YIPopupTextView.h */,
@@ -749,6 +753,15 @@
 				497F9DDD195429AA00C59399 /* ExportArrayDataSource.m */,
 			);
 			path = DataSources;
+			sourceTree = "<group>";
+		};
+		499EFEA7196E6F6600ABF211 /* photoTagger */ = {
+			isa = PBXGroup;
+			children = (
+				499EFEA8196E6F6600ABF211 /* exifTagger.h */,
+				499EFEA9196E6F6600ABF211 /* exifTagger.m */,
+			);
+			path = photoTagger;
 			sourceTree = "<group>";
 		};
 		49BBF5C61963E6BB00E77379 /* Base64 */ = {
@@ -1110,6 +1123,7 @@
 				490B36321945A2ED00B5A0F3 /* PSTCollectionViewCell.m in Sources */,
 				49CA47541961051C00662C2A /* MAImagePickerController.m in Sources */,
 				490B36311945A2ED00B5A0F3 /* PSTCollectionView.m in Sources */,
+				499EFEAA196E6F6600ABF211 /* exifTagger.m in Sources */,
 				490B36351945A2ED00B5A0F3 /* PSTCollectionViewFlowLayout.m in Sources */,
 				490B364D1945A2ED00B5A0F3 /* UIImageView+WebCache.m in Sources */,
 				497F9DD319540E0100C59399 /* ExportCardController.m in Sources */,

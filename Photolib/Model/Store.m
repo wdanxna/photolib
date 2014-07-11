@@ -9,6 +9,7 @@
 #import "Store.h"
 #import "Card.h"
 #import "SDWebImageManager.h"
+#import "exifTagger.h"
 
 #import "_HTTP.h"
 
@@ -411,7 +412,7 @@
         NSArray* sep = [path componentsSeparatedByString:@"/"];
         NSString* fileName = [[path stringByAppendingPathExtension:@"jpg"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            HTTPRequestBase* request = [[HTTPUploader alloc] initWithURLString:@"http://192.168.0.202:8051/service/upload" parameters:@{UPLOAD_Data: compressedData, UPLOAD_FileName: fileName,UPLOAD_MIMEType: @"image/jpeg",UPLOAD_FormParameters: @{@"key": @"1"}}];
+            HTTPRequestBase* request = [[HTTPUploader alloc] initWithURLString:@"http://192.168.0.202:8051/service/upload" parameters:@{UPLOAD_Data: imageData, UPLOAD_FileName: fileName,UPLOAD_MIMEType: @"image/jpeg",UPLOAD_FormParameters: @{@"key": @"1"}}];
             
             [request startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
                 if (! connectionError){
@@ -426,7 +427,10 @@
                     self.rawData = [[NSDictionary alloc] initWithDictionary:_mutableData];
                     self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
                     
-                    [[SDImageCache sharedImageCache] storeImage:compressedImage forKey:path];
+                    NSString* cachePath = [[[self imageDownloadPathWithPath:path] stringByAppendingPathExtension:@"jpg"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                    //always cache the original file to disk, that will maintan the EXIF info
+                    NSDictionary* dd = [exifTagger getMetaDataFromImage:imageData];
+                    [[SDImageCache sharedImageCache] storeImage:compressedImage recalculateFromImage:NO imageData:imageData forKey:cachePath toDisk:YES];
                 }
                 dispatch_async(dispatch_get_main_queue(), ^{
                     callback(connectionError, compressedImage);

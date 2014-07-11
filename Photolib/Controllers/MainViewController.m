@@ -191,9 +191,9 @@
     MWPhotoBrowser* temp_b = [[MWPhotoBrowser alloc] initWithDelegate:self.photoDataSource];
     temp_b.displayActionButton = YES;
     temp_b.displayNavArrows = YES;
-    temp_b.alwaysShowControls = YES;
     [temp_b setCurrentPhotoIndex:index];
     [self.navigationController pushViewController:temp_b animated:YES];
+//    [self presentViewController:temp_b animated:YES completion:nil];
 }
 
 -(void) viewPhotoWithItem:(Card*)item{
