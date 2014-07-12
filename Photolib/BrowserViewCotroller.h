@@ -32,6 +32,7 @@
 -(void) refresh;
 -(void) pushPath:(NSString*)path;
 -(void) back;
+-(void) popToRoot;
 -(NSArray*) indexPathsForSelectedItems;
 
 @end

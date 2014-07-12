@@ -12,6 +12,7 @@
 @protocol SearchPhotosDelegate <NSObject>
 
 -(void) searchPhotoController:(SearchPhotosViewController*)controller didSelectItem:(id)item;
+-(void) searchPhotoController:(SearchPhotosViewController*)controller dismissedWithJumpPath:(NSString*)path;
 
 @end
 

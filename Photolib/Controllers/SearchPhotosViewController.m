@@ -11,6 +11,9 @@
 #import "WDSearchTableView.h"
 #import "AppDelegate.h"
 #import "ExportAlbumCell.h"
+#import "MWPhotoBrowser.h"
+#import "PhotoDataSource.h"
+#import "Card.h"
 
 @interface SearchPhotosViewController ()<WDSearchTableViewDelegate>
 
@@ -18,7 +21,10 @@
 @property(nonatomic,weak) WDSearchTableView* searchController;
 @end
 
-@implementation SearchPhotosViewController
+@implementation SearchPhotosViewController{
+    Card* _currentSelectedItem;
+    PhotoDataSource* _searchContent;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -33,6 +39,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"New Title" style:UIBarButtonItemStyleDone target:self action:@selector(dismissView)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -47,7 +54,32 @@
 #pragma mark -
 #pragma mark - WDSearchTableView Delegate
 -(void) wdsearchview:(WDSearchTableView *)searchview didSelectWithItem:(id)item{
-    [self.delegate searchPhotoController:self didSelectItem:item];
+//    [self.delegate searchPhotoController:self didSelectItem:item];
+    Card* selected = (Card*)item;
+    _currentSelectedItem = selected;
+    if (selected.isAlbum){
+        
+    }
+    else{
+        
+        _searchContent = [[PhotoDataSource alloc] initWithItems:@[selected.photo]];
+        MWPhotoBrowser* b = [[MWPhotoBrowser alloc] initWithDelegate:_searchContent];
+        b.displayActionButton = YES;
+        b.navigationItem.leftBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"back" style:UIBarButtonItemStyleDone target:self action:@selector(dismissPhotoView)];
+        [b setCurrentPhotoIndex:0];
+        [self.navigationController pushViewController:b animated:YES];
+    }
+}
+
+-(void) dismissPhotoView{
+    NSString* jumpPath;
+    if (_currentSelectedItem.isAlbum){
+        jumpPath = _currentSelectedItem.path.absoluteString;
+    }else{
+        NSArray* split = [_currentSelectedItem.path.absoluteString componentsSeparatedByString:@"?"];
+        jumpPath = [[(NSString*)split[1] stringByRemovingPercentEncoding] stringByDeletingLastPathComponent];
+    }
+    [self.delegate searchPhotoController:self dismissedWithJumpPath:jumpPath];
 }
 
 

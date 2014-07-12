@@ -31,7 +31,8 @@
 /*
  This class should work as embaded browser's delegate.
  */
-@interface MainViewController ()<WDBrowserDelegate,
+@interface MainViewController ()<UINavigationBarDelegate,
+                                WDBrowserDelegate,
                                 NewAlbumDelegate,
                                 ExportCardProtocol,
                                 SearchPhotosDelegate,
@@ -203,7 +204,12 @@
     b.alwaysShowControls = YES;
     [b setCurrentPhotoIndex:0];
     [self.navigationController pushViewController:b animated:YES];
+//    [self presentViewController:b animated:YES completion:nil];
 }
+
+#pragma mark - NavigationBar Delegate
+
+
 #pragma mark -
 #pragma mark - Export Delegate
 -(void) exportCardController:(ExportCardController *)controller didExportToItem:(id)item{
@@ -233,8 +239,22 @@
 }
 #pragma mark -
 #pragma mark - searchPhotos delegate
--(void) searchPhotoController:(SearchPhotosViewController *)controller didSelectItem:(id)item{
-    [self viewPhotoWithItem:item];
+//-(void) searchPhotoController:(SearchPhotosViewController *)controller didSelectItem:(id)item{
+//    [self viewPhotoWithItem:item];
+//}
+
+-(void) searchPhotoController:(SearchPhotosViewController *)controller dismissedWithJumpPath:(NSString *)path{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.browser popToRoot];
+    // push in chain
+    NSArray* t = [path componentsSeparatedByString:@"/"];
+    if (t.count > 1){
+        for (int i=2; i<t.count+1; i++){
+            NSArray* subComs = [t subarrayWithRange:(NSRange){0, i}];
+            NSString* subPath = [subComs componentsJoinedByString:@"/"];
+            [self.browser pushPath:subPath];
+        }
+    }
 }
 
 #pragma mark - 

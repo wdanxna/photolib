@@ -109,6 +109,13 @@
     [self.delegate WDBrowser:self didEnterFolder:self.current_path isRoot:root];
 }
 
+-(void) popToRoot{
+    if (self.stack.count > 0){
+        self.current_path = [self.stack firstObject];
+        [self.stack removeAllObjects];
+    }
+}
+
 -(NSArray*)indexPathsForSelectedItems{
     return self.collectionView.indexPathsForSelectedItems;
 }
