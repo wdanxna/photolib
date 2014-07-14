@@ -25,6 +25,7 @@
 
 @property(nonatomic,strong) NSString* current_path;
 @property(nonatomic,strong) id<WDBrowserDelegate> delegate;
+@property(nonatomic,strong) NSString* current_pwd;
 
 -(void) setDataSource:(id)dataSource;
 -(void) changeSelection:(BOOL)selected onCell:(UICollectionViewCell*)cell;

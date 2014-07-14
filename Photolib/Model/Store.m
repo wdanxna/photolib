@@ -64,7 +64,7 @@
             [result addObjectsFromArray:[self allPhotosInDic:data[@"content"][key] atPath:[path stringByAppendingPathComponent:key]]];
         }
     }else{
-        [result addObject:path];
+        [result addObject:@[path,data[@"pwd"]]];
     }
     return result;
 }
@@ -72,7 +72,7 @@
 -(NSArray*) allAlbumsInDic:(NSDictionary*)data atPath:(NSString*)path{
     if (!data[@"content"])return nil;
     NSMutableArray* result = [[NSMutableArray alloc] init];
-    [result addObject:path];
+    [result addObject:@[path,data[@"pwd"]]];
     for (NSString* key in data[@"content"]){
         [result addObjectsFromArray:[self allAlbumsInDic:data[@"content"][key] atPath:[path stringByAppendingPathComponent:key]]];
     }
@@ -82,16 +82,20 @@
 //note this method just use cached data(self.albums) to generate model objects, that means it might get out of date. use with caution.
 -(NSArray*)getAlbums{
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.albums.count];
-    for (NSString* path in self.albums){
-        NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
+    for (NSArray* part in self.albums){
+        NSString* name = [[part[0] componentsSeparatedByString:@"/"] lastObject];
         if ([name isEqualToString:@"BusinessCards"]) name = @"*名片首页*";
-        NSMutableArray* mutComs = [[path componentsSeparatedByString:@"/"] mutableCopy];
+        NSMutableArray* mutComs = [[part[0] componentsSeparatedByString:@"/"] mutableCopy];
         [mutComs insertObject:@"thumbnails" atIndex:mutComs.count-1];
         NSString* thumbPath = [[mutComs componentsJoinedByString:@"/"] stringByAppendingPathExtension:@"jpg"];
-        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path]
+        NSString* password = nil;
+        if (part[1] != [NSNull null]){
+            password = [part[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        }
+        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:part[0]]
                                              thumb:nil
                                          thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name
-                                          password:nil
+                                          password:password
                                              album:YES];
         [result addObject:newCard];
     }
@@ -101,14 +105,20 @@
 // same as above
 -(NSArray*)getPhotos{
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.photos.count];
-    for (NSString* path in self.photos){
-        NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
-        NSString* downloadPahth = [path stringByAppendingPathExtension:@"jpg"];
+    for (NSArray* part in self.photos){
+        NSString* name = [[part[0] componentsSeparatedByString:@"/"] lastObject];
+        NSString* downloadPahth = [part[0] stringByAppendingPathExtension:@"jpg"];
         NSMutableArray* mutComs = [[downloadPahth componentsSeparatedByString:@"/"] mutableCopy];
         [mutComs insertObject:@"thumbnails" atIndex:mutComs.count-1];
         NSString* thumbPath = [mutComs componentsJoinedByString:@"/"];
         downloadPahth = [self imageDownloadPathWithPath:downloadPahth];
-        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name password:nil album:NO];
+        
+        NSString* password = nil;
+        if (part[1] != [NSNull null]){
+            password = [part[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        }
+        
+        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name password:password album:NO];
         [result addObject:photo];
     }
     return result;

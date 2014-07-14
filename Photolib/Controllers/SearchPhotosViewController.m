@@ -14,6 +14,7 @@
 #import "MWPhotoBrowser.h"
 #import "PhotoDataSource.h"
 #import "Card.h"
+#import "PasswordController.h"
 
 @interface SearchPhotosViewController ()<WDSearchTableViewDelegate>
 
@@ -57,19 +58,38 @@
 //    [self.delegate searchPhotoController:self didSelectItem:item];
     Card* selected = (Card*)item;
     _currentSelectedItem = selected;
-    if (selected.isAlbum){
-        [self.delegate searchPhotoController:self dismissedWithJumpPath:[selected.path.absoluteString stringByRemovingPercentEncoding]];
-    }
-    else{
-        
-        _searchContent = [[PhotoDataSource alloc] initWithItems:@[selected.photo]];
-        MWPhotoBrowser* b = [[MWPhotoBrowser alloc] initWithDelegate:_searchContent];
-        b.displayActionButton = YES;
-        b.navigationItem.leftBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"back" style:UIBarButtonItemStyleDone target:self action:@selector(dismissPhotoView)];
-        [b setCurrentPhotoIndex:0];
-        [self.navigationController pushViewController:b animated:YES];
+    
+    void (^selecteAction)() = ^{
+        if (selected.isAlbum){
+            [self.delegate searchPhotoController:self dismissedWithJumpPath:[selected.path.absoluteString stringByRemovingPercentEncoding]];
+        }
+        else{
+            _searchContent = [[PhotoDataSource alloc] initWithItems:@[selected.photo]];
+            MWPhotoBrowser* b = [[MWPhotoBrowser alloc] initWithDelegate:_searchContent];
+            b.displayActionButton = YES;
+            b.navigationItem.leftBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"back" style:UIBarButtonItemStyleDone target:self action:@selector(dismissPhotoView)];
+            [b setCurrentPhotoIndex:0];
+            [self.navigationController pushViewController:b animated:YES];
+        }
+    };
+    
+    if (selected.password){
+        PasswordController* password = [self.storyboard instantiateViewControllerWithIdentifier:@"pwdController"];
+        password.title = selected.name;
+        password.donePassword = ^(NSString* password){
+            if ([password isEqualToString:selected.password]){
+                selecteAction();
+            }else{
+                UIAlertView* deny = [[UIAlertView alloc] initWithTitle:nil message:@"密码错误" delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];
+                [deny show];
+            }
+        };
+        [self.navigationController pushViewController:password animated:YES];
+    }else{
+        selecteAction();
     }
 }
+
 
 -(void) dismissPhotoView{
     NSString* jumpPath;

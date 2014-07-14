@@ -176,6 +176,7 @@
         if ([password isEqualToString:selected.password]){
             [self.navigationController popViewControllerAnimated:YES];
             [self.browser pushPath:apath];
+            self.browser.current_pwd = password;
         }
         else{
             UIAlertView* deny = [[UIAlertView alloc] initWithTitle:nil message:@"密码错误" delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];

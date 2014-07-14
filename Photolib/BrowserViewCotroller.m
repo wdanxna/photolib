@@ -22,7 +22,7 @@
 
 @implementation BrowserViewCotroller
 
-@synthesize current_path,delegate;
+@synthesize current_path,delegate, current_pwd;
 
 - (void)viewDidLoad
 {
@@ -82,7 +82,7 @@
 //    if (self.delegate && [self.delegate conformsToProtocol:@protocol(WDBrowserDelegate)]){
 //        [self.delegate WDBrowser:self didEnterFolder:data.path.path];
 //    }
-    if (data.password){
+    if (data.password && ![data.password isEqualToString:self.current_pwd]){
         [self.delegate WDBrowser:self didAskPasswordForData:data path:[self.current_path stringByAppendingPathComponent:data.name]];
     }else{
         NSString* pushPath = [self.current_path stringByAppendingPathComponent:data.name];
