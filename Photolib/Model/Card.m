@@ -11,7 +11,7 @@
 @implementation Card
 @synthesize path, photo, thumb, name, isAlbum, password, thumb_path, date;
 
--(id)initWithPath:(NSURL*)apath thumb:(UIImage*)athumb thumbPath:(NSURL*)thumbPath name:(NSString*)aname album:(BOOL)album{
+-(id)initWithPath:(NSURL*)apath thumb:(UIImage*)athumb thumbPath:(NSURL*)thumbPath name:(NSString*)aname password:(NSString*)apassword album:(BOOL)album{
     self= [super init];
     if (self){
         if ([apath isKindOfClass:[NSString class]]){
@@ -31,7 +31,7 @@
         self.thumb = athumb;
         self.isAlbum = album;
         self.name = aname;
-        self.password = @"";
+        self.password = apassword;
         if (!self.isAlbum && self.path){
             self.photo = [MWPhoto photoWithURL:self.path];
         }

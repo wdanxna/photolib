@@ -12,6 +12,7 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *thumb;
 @property (weak, nonatomic) IBOutlet UILabel *title;
+@property (weak, nonatomic) IBOutlet UILabel *description;
 
 
 -(void) configureCell:(id)item;

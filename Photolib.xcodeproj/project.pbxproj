@@ -52,6 +52,7 @@
 		490B364C1945A2ED00B5A0F3 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 490B361D1945A2ED00B5A0F3 /* UIImage+WebP.m */; };
 		490B364D1945A2ED00B5A0F3 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 490B361F1945A2ED00B5A0F3 /* UIImageView+WebCache.m */; };
 		490B364E1945A2ED00B5A0F3 /* MWPhotoBrowser.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 490B36211945A2ED00B5A0F3 /* MWPhotoBrowser.bundle */; };
+		49188D9819712EB700C17E50 /* PasswordController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49188D9719712EB700C17E50 /* PasswordController.m */; };
 		492565821959648600846D53 /* WDSearchTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 492565811959648600846D53 /* WDSearchTableView.m */; };
 		4925658A195965D700846D53 /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 49256585195965D700846D53 /* camera.png */; };
 		4925658B195965D700846D53 /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 49256586195965D700846D53 /* delete.png */; };
@@ -267,6 +268,8 @@
 		490B36201945A2ED00B5A0F3 /* MWPhotoBrowser-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MWPhotoBrowser-Prefix.pch"; sourceTree = "<group>"; };
 		490B36211945A2ED00B5A0F3 /* MWPhotoBrowser.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MWPhotoBrowser.bundle; sourceTree = "<group>"; };
 		490B36221945A2ED00B5A0F3 /* MWPhotoBrowser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = MWPhotoBrowser.xcodeproj; sourceTree = "<group>"; };
+		49188D9619712EB700C17E50 /* PasswordController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordController.h; sourceTree = "<group>"; };
+		49188D9719712EB700C17E50 /* PasswordController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasswordController.m; sourceTree = "<group>"; };
 		492565801959648600846D53 /* WDSearchTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WDSearchTableView.h; sourceTree = "<group>"; };
 		492565811959648600846D53 /* WDSearchTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WDSearchTableView.m; sourceTree = "<group>"; };
 		49256585195965D700846D53 /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
@@ -642,6 +645,8 @@
 				49CA46DB195E9E1000662C2A /* SearchPhotosViewController.m */,
 				49D6ACD21962529300114E6E /* EditController.h */,
 				49D6ACD31962529300114E6E /* EditController.m */,
+				49188D9619712EB700C17E50 /* PasswordController.h */,
+				49188D9719712EB700C17E50 /* PasswordController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1117,6 +1122,7 @@
 				490B36331945A2ED00B5A0F3 /* PSTCollectionViewController.m in Sources */,
 				490B36361945A2ED00B5A0F3 /* PSTCollectionViewItemKey.m in Sources */,
 				490B363C1945A2ED00B5A0F3 /* PSTGridLayoutSection.m in Sources */,
+				49188D9819712EB700C17E50 /* PasswordController.m in Sources */,
 				49BBF5D91963E6BB00E77379 /* HTTPPostRequest.m in Sources */,
 				490B362A1945A2ED00B5A0F3 /* MWTapDetectingImageView.m in Sources */,
 				490B36251945A2ED00B5A0F3 /* MWCaptionView.m in Sources */,

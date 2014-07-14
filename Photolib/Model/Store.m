@@ -44,9 +44,9 @@
     [request startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         if (!connectionError){
             self.rawData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+            _mutableData = [self deepMutableCopy:self.rawData];
             self.albums = [self allAlbumsInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
             self.photos = [self allPhotosInDic:self.rawData[@"BusinessCards"] atPath:@"BusinessCards"];
-            _mutableData = [self deepMutableCopy:self.rawData];
             _curlevelDic = [[NSMutableDictionary alloc] init];
             _curAlbums = [[NSMutableArray alloc] init];
             _curPhotos = [[NSMutableArray alloc] init];
@@ -84,10 +84,15 @@
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:self.albums.count];
     for (NSString* path in self.albums){
         NSString* name = [[path componentsSeparatedByString:@"/"] lastObject];
+        if ([name isEqualToString:@"BusinessCards"]) name = @"*名片首页*";
         NSMutableArray* mutComs = [[path componentsSeparatedByString:@"/"] mutableCopy];
         [mutComs insertObject:@"thumbnails" atIndex:mutComs.count-1];
         NSString* thumbPath = [[mutComs componentsJoinedByString:@"/"] stringByAppendingPathExtension:@"jpg"];
-        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path] thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name album:YES];
+        Card* newCard = [[Card alloc] initWithPath:[self nsurlWithPath:path]
+                                             thumb:nil
+                                         thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name
+                                          password:nil
+                                             album:YES];
         [result addObject:newCard];
     }
     return result;
@@ -103,7 +108,7 @@
         [mutComs insertObject:@"thumbnails" atIndex:mutComs.count-1];
         NSString* thumbPath = [mutComs componentsJoinedByString:@"/"];
         downloadPahth = [self imageDownloadPathWithPath:downloadPahth];
-        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name album:NO];
+        Card* photo = [[Card alloc] initWithPath:downloadPahth thumb:nil thumbPath:[self thumbnailDownloadPathWithPath:thumbPath] name:name password:nil album:NO];
         [result addObject:photo];
     }
     return result;
@@ -161,9 +166,12 @@
                     enterPath = [self imageDownloadPathWithPath:enterPath];
                 }
                 thumbPath = [self thumbnailDownloadPathWithPath:[[mutableThumbComps componentsJoinedByString:@"/"] stringByAppendingPathExtension:@"jpg"]];
+                NSString* pwd = nil;
+                if (item[@"pwd"] != [NSNull null]){
+                   pwd = [item[@"pwd"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                }
                 
-                
-                Card* insertone = [[Card alloc] initWithPath:enterPath thumb:nil thumbPath:thumbPath name:item[@"name"] album:isalbum];
+                Card* insertone = [[Card alloc] initWithPath:enterPath thumb:nil thumbPath:thumbPath name:item[@"name"] password:pwd album:isalbum];
                 
                 [whichToInsert
                  addObject:insertone];
@@ -234,21 +242,25 @@
 -(void) createAlbumAtPath:(NSString*)path name:(NSString*)name passwd:(NSString*)passwd complete:(createAlbumCallback)callback{
     
     NSString* encodedPath = [[path stringByAppendingPathComponent:name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSMutableDictionary* createParam = [[NSMutableDictionary alloc] init];
+    [createParam setValue:encodedPath forKey:@"path"];
+    if (passwd){
+        [createParam setObject:passwd forKey:@"pwd"];
+    }
     HTTPRequestBase* uploadRequest = [[HTTPPostRequest alloc]
                                       initWithURLString:@"http://192.168.0.202:8051/service/newfolder"
-                                      parameters:@{@"path":encodedPath}];
+                                      parameters:createParam];
     [uploadRequest startAsynchronousRequest:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         if (!connectionError){
-            Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:encodedPath] thumb:nil thumbPath:[self thumbpath] name:name album:YES];
+            Card* newAlbum = [[Card alloc] initWithPath:[NSURL URLWithString:encodedPath] thumb:nil thumbPath:[self thumbpath] name:name password:passwd album:YES];
             //do some request here
             [_curAlbums addObject:newAlbum];
             NSDictionary* temp = @{@"name":newAlbum.name,
                                    @"path":newAlbum.path.path,
-                                   @"pwd":newAlbum.password,
                                    @"date":[NSNull null],
                                    @"content":@{}};
             NSMutableDictionary* mut_new = [self deepMutableCopy:temp];
-            
+            if (passwd) [mut_new setValue:passwd forKey:@"pwd"];
             [_curlevelDic setValue:mut_new forKeyPath:[NSString stringWithFormat:@"content.%@",name]];
             
             NSString* newIndexPaths = [self path2IndexPaths:_curlevelPath];

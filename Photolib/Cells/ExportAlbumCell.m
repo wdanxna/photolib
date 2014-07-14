@@ -27,7 +27,16 @@
 }
 
 -(void) configureCell:(id)item{
-    [self.thumb setImageWithURL:((Card*)item).thumb_path placeholderImage:nil options:SDWebImageRetryFailed];
+    Card* card = item;
+    self.description.adjustsFontSizeToFitWidth = YES;
+    if (card.isAlbum){
+        [self.thumb setImage:[UIImage imageNamed:@"album_frame.png"]];
+        self.description.text = card.path.path;
+    }else{
+        [self.thumb setImageWithURL:((Card*)item).thumb_path placeholderImage:nil options:SDWebImageRetryFailed];
+        NSString* des = [[[card.path.absoluteString componentsSeparatedByString:@"?"] lastObject] stringByRemovingPercentEncoding];
+        self.description.text = des;
+    }
     self.title.text = ((Card*) item).name;
 }
 

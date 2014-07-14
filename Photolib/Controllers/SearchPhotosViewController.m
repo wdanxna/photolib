@@ -58,7 +58,7 @@
     Card* selected = (Card*)item;
     _currentSelectedItem = selected;
     if (selected.isAlbum){
-        
+        [self.delegate searchPhotoController:self dismissedWithJumpPath:[selected.path.absoluteString stringByRemovingPercentEncoding]];
     }
     else{
         
@@ -92,7 +92,10 @@
         self.searchController = [segue destinationViewController];
         self.searchController.delegate = self;
         NSArray* photos = [[AppDelegate sharedDelegate].Store getPhotos];
-        self.searchDataSource = [[ExportArrayDataSource alloc] initWithItems:photos
+        NSArray* albums = [[AppDelegate sharedDelegate].Store getAlbums];
+        NSMutableArray* source = [[NSMutableArray alloc] initWithArray:albums];
+        [source addObjectsFromArray:photos];
+        self.searchDataSource = [[ExportArrayDataSource alloc] initWithItems:source
                                                               cellIdentifier:@"ExportAlbumCell"
                                                           configureCellBlock:^(id cell, id item) {
                                                               [((ExportAlbumCell*)cell) configureCell:item];

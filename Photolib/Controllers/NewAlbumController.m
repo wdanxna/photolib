@@ -75,8 +75,10 @@
 
 - (IBAction)done:(id)sender {
     if (self.nameInput.text.length < 1) return;
+    NSString* pwd = nil;
+    if (self.pwdInput.text.length > 0) pwd = self.pwdInput.text;
     if (self.delegate && [self.delegate conformsToProtocol:@protocol(NewAlbumDelegate)]){
-        [self.delegate newAlbumController:self didDoneWithName:self.nameInput.text passwd:self.pwdInput.text];
+        [self.delegate newAlbumController:self didDoneWithName:self.nameInput.text passwd:pwd];
     }
 }
 @end

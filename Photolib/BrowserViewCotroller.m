@@ -82,8 +82,12 @@
 //    if (self.delegate && [self.delegate conformsToProtocol:@protocol(WDBrowserDelegate)]){
 //        [self.delegate WDBrowser:self didEnterFolder:data.path.path];
 //    }
-    NSString* pushPath = [self.current_path stringByAppendingPathComponent:data.name];
-    [self pushPath:pushPath];
+    if (data.password){
+        [self.delegate WDBrowser:self didAskPasswordForData:data path:[self.current_path stringByAppendingPathComponent:data.name]];
+    }else{
+        NSString* pushPath = [self.current_path stringByAppendingPathComponent:data.name];
+        [self pushPath:pushPath];
+    }
 }
 
 -(void) viewPhotoWithData:(Card*)data atIndexPath:(NSIndexPath*)indexPath{

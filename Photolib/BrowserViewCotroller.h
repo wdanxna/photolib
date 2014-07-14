@@ -17,6 +17,7 @@
 -(void) WDBrowser:(BrowserViewCotroller *)browser didViewPhotoAtIndex:(NSInteger)index;
 -(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path isRoot:(BOOL)root;
 -(void) WDBrowser:(BrowserViewCotroller *)browser didUpdateDataWithPath:(NSString*)path;
+-(void) WDBrowser:(BrowserViewCotroller *)browser didAskPasswordForData:(id)data path:(NSString*)apath;
 
 @end
 

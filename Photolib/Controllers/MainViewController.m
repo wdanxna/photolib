@@ -28,6 +28,7 @@
 #import "MBProgressHUD.h"
 #import "EditController.h"
 #import "YIPopupTextView.h"
+#import "PasswordController.h"
 /*
  This class should work as embaded browser's delegate.
  */
@@ -131,7 +132,12 @@
 -(void) WDBrowser:(BrowserViewCotroller *)browser didEnterFolder:(NSString *)path isRoot:(BOOL)root{
     NSLog(@"Did enter Folder: %@", path);
     NSArray* coms = [path componentsSeparatedByString:@"/"];
-    self.navigationItem.title = [coms lastObject];
+    //fixme: dirty trick
+    if ([[coms lastObject] isEqualToString:@"BusinessCards"]){
+        self.navigationItem.title = @"首页";
+    }else{
+        self.navigationItem.title = [coms lastObject];
+    }
     if (root){
         [self backBackHidden:YES];
     }else{
@@ -160,6 +166,24 @@
 -(void) WDBrowser:(BrowserViewCotroller *)browser didDeselectItemAtIndex:(NSIndexPath *)index{
     Card* deselectedItem = [self.browserDataSource itemAtIndex:index];
     [_currentSelectedModel removeObject:deselectedItem];
+}
+
+-(void) WDBrowser:(BrowserViewCotroller *)browser didAskPasswordForData:(id)data path:(NSString *)apath{
+    Card* selected = data;
+    PasswordController* password = [self.storyboard instantiateViewControllerWithIdentifier:@"pwdController"];
+    password.title = selected.name;
+    password.donePassword = ^(NSString* password){
+        if ([password isEqualToString:selected.password]){
+            [self.navigationController popViewControllerAnimated:YES];
+            [self.browser pushPath:apath];
+        }
+        else{
+            UIAlertView* deny = [[UIAlertView alloc] initWithTitle:nil message:@"密码错误" delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];
+            [deny show];
+        }
+    };
+    [self.navigationController pushViewController:password animated:YES];
+//    [self presentViewController:password animated:YES completion:nil];
 }
 
 
@@ -352,6 +376,8 @@
 - (IBAction)exportAction:(id)sender {
     NSArray* indexPaths = [self.browser indexPathsForSelectedItems];
     if (indexPaths.count < 1){
+        UIAlertView* exportAlert = [[UIAlertView alloc] initWithTitle:nil message:@"請選擇需要移動的項目" delegate:self cancelButtonTitle:@"ok" otherButtonTitles:nil];
+        [exportAlert show];
         return;
     }
     UINavigationController* navi = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportController"];
@@ -390,7 +416,7 @@
 
 - (IBAction)editAction:(id)sender {
     if (_currentSelectedModel.count != 1){
-        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"请仅选择一个档案进行更改" delegate:self cancelButtonTitle:@"好" otherButtonTitles:nil];
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"請僅選擇一個項目進行更改" delegate:self cancelButtonTitle:@"好" otherButtonTitles:nil];
         [alert show];
         return;
     }
@@ -407,7 +433,6 @@
     NSArray* selected = [self.browser indexPathsForSelectedItems];
     NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:selected.count];
     if (selected.count){
-        NSLog(@"remove %d objects",selected.count);
         //        [[AppDelegate sharedDelegate].Store removeItemAtIndexPaths:selected];
         //        [self.browser refresh];
         
@@ -426,6 +451,9 @@
             }
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         }];
+    }else{
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"請選擇需要刪除的項目" delegate:self cancelButtonTitle:@"ok" otherButtonTitles:nil];
+        [alert show];
     }
     
 }

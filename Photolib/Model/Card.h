@@ -20,7 +20,7 @@
 @property(nonatomic,assign)BOOL isAlbum;
 @property(nonatomic,strong) NSDate* date;
 
--(id)initWithPath:(NSURL*)path thumb:(UIImage*)image thumbPath:(NSURL*)thumbPath name:(NSString*)name album:(BOOL)album;
+-(id)initWithPath:(NSURL*)path thumb:(UIImage*)image thumbPath:(NSURL*)thumbPath name:(NSString*)name password:(NSString*)apassword album:(BOOL)album;
 
 -(NSDictionary*) photoToDictionary;
 
