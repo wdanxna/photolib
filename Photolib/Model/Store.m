@@ -64,7 +64,10 @@
             [result addObjectsFromArray:[self allPhotosInDic:data[@"content"][key] atPath:[path stringByAppendingPathComponent:key]]];
         }
     }else{
-        [result addObject:@[path,data[@"pwd"]]];
+        id pwd = [NSNull null];
+        if (data[@"pwd"])
+            pwd = [NSString stringWithFormat:@"%@",data[@"pwd"]];
+        [result addObject:@[path,pwd]];
     }
     return result;
 }
@@ -72,7 +75,7 @@
 -(NSArray*) allAlbumsInDic:(NSDictionary*)data atPath:(NSString*)path{
     if (!data[@"content"])return nil;
     NSMutableArray* result = [[NSMutableArray alloc] init];
-    [result addObject:@[path,data[@"pwd"]]];
+    [result addObject:@[path,data[@"pwd"]?data[@"pwd"]:[NSNull null]]];
     for (NSString* key in data[@"content"]){
         [result addObjectsFromArray:[self allAlbumsInDic:data[@"content"][key] atPath:[path stringByAppendingPathComponent:key]]];
     }
@@ -114,7 +117,7 @@
         downloadPahth = [self imageDownloadPathWithPath:downloadPahth];
         
         NSString* password = nil;
-        if (part[1] != [NSNull null]){
+        if (![part[1] isEqualToString:@"<null>"]){
             password = [part[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         }
         

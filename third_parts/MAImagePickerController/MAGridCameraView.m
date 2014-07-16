@@ -35,18 +35,18 @@
     CGContextSetLineWidth(context, 2.0);
     
     //Horizontal line
-    CGContextMoveToPoint(context, self.bounds.origin.x, 150);
-    CGContextAddLineToPoint(context, self.bounds.origin.x+self.bounds.size.width, 150);
+    CGContextMoveToPoint(context, self.bounds.origin.x, self.bounds.size.height/4);
+    CGContextAddLineToPoint(context, self.bounds.origin.x+self.bounds.size.width, self.bounds.size.height/4);
     
-    CGContextMoveToPoint(context, self.bounds.origin.x, 350);
-    CGContextAddLineToPoint(context, self.bounds.origin.x+self.bounds.size.width, 350);
+    CGContextMoveToPoint(context, self.bounds.origin.x, 3*self.bounds.size.height/4);
+    CGContextAddLineToPoint(context, self.bounds.origin.x+self.bounds.size.width,  3*self.bounds.size.height/4);
     
     //Vertical line
-    CGContextMoveToPoint(context, 50, self.bounds.origin.y);
-    CGContextAddLineToPoint(context, 50 ,self.bounds.origin.y + self.bounds.size.height);
+    CGContextMoveToPoint(context, self.bounds.size.width/5, self.bounds.origin.y);
+    CGContextAddLineToPoint(context, self.bounds.size.width/5 ,self.bounds.origin.y + self.bounds.size.height);
     
-    CGContextMoveToPoint(context, 270, self.bounds.origin.y);
-    CGContextAddLineToPoint(context, 270 ,self.bounds.origin.y + self.bounds.size.height);
+    CGContextMoveToPoint(context, 4*self.bounds.size.width/5, self.bounds.origin.y);
+    CGContextAddLineToPoint(context, 4*self.bounds.size.width/5 ,self.bounds.origin.y + self.bounds.size.height);
     
     CGContextStrokePath(context);
 

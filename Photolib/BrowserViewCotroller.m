@@ -51,6 +51,13 @@
     [self collectionView:self.collectionView didDeselectItemAtIndexPath:indexpath];
 }
 
+-(void) clearSelection{
+    NSArray* selections = self.collectionView.indexPathsForSelectedItems;
+    for (NSIndexPath* index in selections){
+        [self.collectionView deselectItemAtIndexPath:index animated:NO];
+    }
+}
+
 -(void) enterCell:(UICollectionViewCell *)cell{
     NSIndexPath* indexPath = [self.collectionView indexPathForCell:cell];
     Card* current_data = [((DictionaryDataSource*)self.collectionView.dataSource) itemAtIndex:indexPath];
@@ -128,6 +135,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void) viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self clearSelection];
 }
 
 @end

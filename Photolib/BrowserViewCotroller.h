@@ -30,6 +30,7 @@
 -(void) setDataSource:(id)dataSource;
 -(void) changeSelection:(BOOL)selected onCell:(UICollectionViewCell*)cell;
 -(void) enterCell:(UICollectionViewCell*)cell;
+-(void) clearSelection;
 
 -(void) refresh;
 -(void) pushPath:(NSString*)path;
