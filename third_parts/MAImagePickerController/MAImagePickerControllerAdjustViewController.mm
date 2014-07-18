@@ -12,6 +12,8 @@
 #import "MAOpenCV.h"
 #import "UIImageView+ContentFrame.h"
 #import <QuartzCore/QuartzCore.h>
+#import "TouchReader.h"
+#import "UIImage+fixOrientation.h"
 
 @interface MAImagePickerControllerAdjustViewController ()
 
@@ -35,23 +37,31 @@
     return self;
 }
 
-- (void)viewWillLayoutSubviews
-{
-    [super viewWillLayoutSubviews];
-//    self.view.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
+-(void) viewDidLoad{
+    [super viewDidLoad];
+    //    self.view.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
     UIView *backgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
     [backgroundView setBackgroundColor:[UIColor blackColor]];
     [self.view addSubview:backgroundView];
     
     _sourceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - kCameraToolBarHeight)];
     [_sourceImageView setContentMode:UIViewContentModeScaleAspectFit];
+
     _adjustedImage = _sourceImage;
     
+    /* hack here */
+    CGAffineTransform rotationTransform = CGAffineTransformIdentity;
+    rotationTransform = CGAffineTransformRotate(rotationTransform, -M_PI_2);
+    _sourceImageView.transform = rotationTransform;
+    /* hack end*/
+    
     [_sourceImageView setImage:_adjustedImage];
+
     [self.view addSubview:_sourceImageView];
     
     _adjustRect= [[MADrawRect alloc] initWithFrame:_sourceImageView.contentFrame];
-    [_adjustRect.bg setImage:_sourceImage];
+//    [_adjustRect.bg setImage:_sourceImage];
+    _adjustRect.transform = rotationTransform;
     [self.view addSubview:_adjustRect];
     
     _adjustToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - kCameraToolBarHeight, self.view.bounds.size.width, kCameraToolBarHeight)];
@@ -74,7 +84,18 @@
     
     [self.view addSubview:_adjustToolBar];
     
+    //    TouchReader* touchMagnifier = [[TouchReader alloc] initWithFrame:self.view.bounds];
+    //    touchMagnifier.userInteractionEnabled = YES;
+    //    touchMagnifier.alpha = 0;
+    //    [self.view addSubview:touchMagnifier];
+    
     [self detectEdges];
+
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -106,10 +127,10 @@
 
 - (void)detectEdges
 {
+
     cv::Mat original = [MAOpenCV cvMatFromUIImage:_adjustedImage];
     CGSize targetSize = _sourceImageView.contentSize;
     cv::resize(original, original, cvSize(targetSize.width, targetSize.height));
-    
     cv::vector<cv::vector<cv::Point>>squares;
     cv::vector<cv::Point> largest_square;
     
@@ -234,6 +255,15 @@
         src[2].y = ptBottomRight.y;
         src[3].x = ptBottomLeft.x;
         src[3].y = ptBottomLeft.y;
+        
+//        src[0].x = ptBottomLeft.x;
+//        src[0].y = ptBottomLeft.y;
+//        src[1].x = ptBottomRight.x;
+//        src[1].y = ptBottomRight.y;
+//        src[2].x = ptTopRight.x;
+//        src[2].x = ptTopRight.y;
+//        src[3].x = ptTopLeft.x;
+//        src[3].y = ptTopLeft.y;
         
         dst[0].x = 0;
         dst[0].y = 0;

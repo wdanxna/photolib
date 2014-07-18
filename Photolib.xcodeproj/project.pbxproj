@@ -154,6 +154,12 @@
 		49CA475A1961051C00662C2A /* UIImageView+ContentFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 49CA47221961051C00662C2A /* UIImageView+ContentFrame.m */; };
 		49CA475C196116F400662C2A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49CA475B196116F400662C2A /* opencv2.framework */; };
 		49D6ACD41962529300114E6E /* EditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D6ACD31962529300114E6E /* EditController.m */; };
+		49D78F4219761D780004CDE8 /* MagnifierView.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D78F4119761D780004CDE8 /* MagnifierView.m */; };
+		49D78F46197624940004CDE8 /* TouchReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D78F45197624940004CDE8 /* TouchReader.m */; };
+		49DD179219766E4600B5B187 /* loupe-hi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49DD178E19766E4600B5B187 /* loupe-hi@2x.png */; };
+		49DD179319766E4600B5B187 /* loupe-shadow-hi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49DD178F19766E4600B5B187 /* loupe-shadow-hi@2x.png */; };
+		49DD179419766E4600B5B187 /* loupe-shadow-mask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49DD179019766E4600B5B187 /* loupe-shadow-mask@2x.png */; };
+		49DD179819766E7000B5B187 /* loupe-mask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49DD179719766E7000B5B187 /* loupe-mask@2x.png */; };
 		49E034D2196B955900D11F2F /* HTTPUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E034D1196B955900D11F2F /* HTTPUploader.m */; };
 /* End PBXBuildFile section */
 
@@ -412,6 +418,14 @@
 		49CA475B196116F400662C2A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = Photolib/opencv2.framework; sourceTree = "<group>"; };
 		49D6ACD21962529300114E6E /* EditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditController.h; sourceTree = "<group>"; };
 		49D6ACD31962529300114E6E /* EditController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditController.m; sourceTree = "<group>"; };
+		49D78F4019761D780004CDE8 /* MagnifierView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifierView.h; sourceTree = "<group>"; };
+		49D78F4119761D780004CDE8 /* MagnifierView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifierView.m; sourceTree = "<group>"; };
+		49D78F44197624940004CDE8 /* TouchReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchReader.h; sourceTree = "<group>"; };
+		49D78F45197624940004CDE8 /* TouchReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchReader.m; sourceTree = "<group>"; };
+		49DD178E19766E4600B5B187 /* loupe-hi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "loupe-hi@2x.png"; sourceTree = "<group>"; };
+		49DD178F19766E4600B5B187 /* loupe-shadow-hi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "loupe-shadow-hi@2x.png"; sourceTree = "<group>"; };
+		49DD179019766E4600B5B187 /* loupe-shadow-mask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "loupe-shadow-mask@2x.png"; sourceTree = "<group>"; };
+		49DD179719766E7000B5B187 /* loupe-mask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "loupe-mask@2x.png"; sourceTree = "<group>"; };
 		49E034CA196B8F3200D11F2F /* HTTPUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPUploader.h; sourceTree = "<group>"; };
 		49E034D1196B955900D11F2F /* HTTPUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPUploader.m; path = ../../../../../Workspaces/Modules/Data/HTTP/HTTPUploader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -647,6 +661,10 @@
 				49D6ACD31962529300114E6E /* EditController.m */,
 				49188D9619712EB700C17E50 /* PasswordController.h */,
 				49188D9719712EB700C17E50 /* PasswordController.m */,
+				49D78F4019761D780004CDE8 /* MagnifierView.h */,
+				49D78F4119761D780004CDE8 /* MagnifierView.m */,
+				49D78F44197624940004CDE8 /* TouchReader.h */,
+				49D78F45197624940004CDE8 /* TouchReader.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -654,6 +672,10 @@
 		49256584195965D700846D53 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				49DD179719766E7000B5B187 /* loupe-mask@2x.png */,
+				49DD178E19766E4600B5B187 /* loupe-hi@2x.png */,
+				49DD178F19766E4600B5B187 /* loupe-shadow-hi@2x.png */,
+				49DD179019766E4600B5B187 /* loupe-shadow-mask@2x.png */,
 				49017DF6194EDC8F008AD7FA /* selectionIcon.png */,
 				49256585195965D700846D53 /* camera.png */,
 				49256586195965D700846D53 /* delete.png */,
@@ -1033,6 +1055,7 @@
 				4940F052192DD8DE00B7A76D /* Main_iPhone.storyboard in Resources */,
 				49CA47351961051C00662C2A /* enhance-button@2x.png in Resources */,
 				49CA47281961051C00662C2A /* camera-button.png in Resources */,
+				49DD179419766E4600B5B187 /* loupe-shadow-mask@2x.png in Resources */,
 				49CA474A1961051C00662C2A /* f-setting-tray.png in Resources */,
 				49CA47341961051C00662C2A /* enhance-button.png in Resources */,
 				49CA47331961051C00662C2A /* crop-button-icon@2x.png in Resources */,
@@ -1048,9 +1071,12 @@
 				49CA472A1961051C00662C2A /* camera-button@2x_.png in Resources */,
 				49CA47321961051C00662C2A /* crop-button-icon.png in Resources */,
 				49CA47491961051C00662C2A /* f-setting-rotate@2x.png in Resources */,
+				49DD179219766E4600B5B187 /* loupe-hi@2x.png in Resources */,
+				49DD179319766E4600B5B187 /* loupe-shadow-hi@2x.png in Resources */,
 				490B362F1945A2ED00B5A0F3 /* README.mdown in Resources */,
 				49CA473A1961051C00662C2A /* f-setting-2-active.png in Resources */,
 				49BFC31C1946E108008DEA55 /* album_frame.png in Resources */,
+				49DD179819766E7000B5B187 /* loupe-mask@2x.png in Resources */,
 				49CA473E1961051C00662C2A /* f-setting-3-active.png in Resources */,
 				4925658A195965D700846D53 /* camera.png in Resources */,
 				49CA47381961051C00662C2A /* f-setting-1.png in Resources */,
@@ -1088,6 +1114,7 @@
 				490B36421945A2ED00B5A0F3 /* SDImageCache.m in Sources */,
 				490B362B1945A2ED00B5A0F3 /* MWTapDetectingView.m in Sources */,
 				490B36431945A2ED00B5A0F3 /* SDWebImageCompat.m in Sources */,
+				49D78F46197624940004CDE8 /* TouchReader.m in Sources */,
 				490B36381945A2ED00B5A0F3 /* PSTCollectionViewUpdateItem.m in Sources */,
 				497F9DDA1954121300C59399 /* DictionaryDataSource.m in Sources */,
 				497F9DE11954351600C59399 /* ExportAlbumCell.m in Sources */,
@@ -1136,6 +1163,7 @@
 				490B364B1945A2ED00B5A0F3 /* UIImage+MultiFormat.m in Sources */,
 				490B364C1945A2ED00B5A0F3 /* UIImage+WebP.m in Sources */,
 				49BFC3241946E339008DEA55 /* PhotoCell.m in Sources */,
+				49D78F4219761D780004CDE8 /* MagnifierView.m in Sources */,
 				49CA47591961051C00662C2A /* UIImage+fixOrientation.m in Sources */,
 				490B36491945A2ED00B5A0F3 /* UIButton+WebCache.m in Sources */,
 				49017DF5194E8DE8008AD7FA /* itemCell.m in Sources */,

@@ -117,7 +117,7 @@
         downloadPahth = [self imageDownloadPathWithPath:downloadPahth];
         
         NSString* password = nil;
-        if (![part[1] isEqualToString:@"<null>"]){
+        if (![part[1] isKindOfClass:[NSNull class]] && ![part[1] isEqualToString:@"<null>"]){
             password = [part[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         }
         

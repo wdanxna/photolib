@@ -48,7 +48,7 @@
     [self.view setBackgroundColor:[UIColor blackColor]];
     
     //this is a trick
-//    _sourceImage = [UIImage imageWithCGImage:_sourceImage.CGImage scale:1.0 orientation:UIImageOrientationLeft];
+    _sourceImage = [UIImage imageWithCGImage:_sourceImage.CGImage scale:1.0 orientation:UIImageOrientationLeft];
     _adjustedImage = _sourceImage;
     
     _finalImageView = [[UIImageView alloc] init];

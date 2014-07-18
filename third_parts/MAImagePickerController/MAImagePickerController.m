@@ -268,8 +268,12 @@
 //    [self.navigationController popViewControllerAnimated:NO];
     
     MAImagePickerControllerAdjustViewController *adjustViewController = [[MAImagePickerControllerAdjustViewController alloc] init];
-
-    adjustViewController.sourceImage = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
+    
+    UIImage* rawImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    rawImage = [self imageWithImage:rawImage scaledToSize:(CGSize){rawImage.size.width/3,rawImage.size.height/3}];
+    NSData* imageData = UIImageJPEGRepresentation(rawImage, 0.4);
+    UIImage* compressed = [[UIImage imageWithData:imageData] fixOrientation];
+    adjustViewController.sourceImage = compressed;
     
     CATransition* transition = [CATransition animation];
     transition.duration = 0.4;
@@ -278,6 +282,26 @@
     [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
     [self.navigationController pushViewController:adjustViewController animated:NO];
     
+}
+
+-(UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize
+{
+    // Create a graphics image context
+    UIGraphicsBeginImageContext(newSize);
+//    CGContextRotateCTM(UIGraphicsGetCurrentContext(), M_PI_4);
+//    CGContextTranslateCTM(UIGraphicsGetCurrentContext(), newSize.width, 0);
+    // Tell the old image to draw in this new context, with the desired
+    // new size
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
+    
+    // Get the new image from the context
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    // End the context
+    UIGraphicsEndImageContext();
+    
+    // Return the new image.
+    return newImage;
 }
 
 

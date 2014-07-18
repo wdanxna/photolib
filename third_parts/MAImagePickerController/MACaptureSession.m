@@ -8,6 +8,7 @@
 
 #import "MACaptureSession.h"
 #import <ImageIO/ImageIO.h>
+#import "UIImage+fixOrientation.h"
 
 @implementation MACaptureSession
 
@@ -155,12 +156,14 @@
                  //NSLog(@"no attachments");
              }
              NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
-             UIImage *image = [[UIImage alloc] initWithData:imageData];
-
-             image = [[UIImage alloc] initWithCGImage: image.CGImage
-                                                         scale: 1.0
-                                                   orientation: UIImageOrientationRight];
-             [self setStillImage:image];
+             UIImage *image = [[[UIImage alloc] initWithData:imageData] fixOrientation];
+             image = [[UIImage imageWithImage:image scaledToSize:(CGSize){image.size.width/3, image.size.height/3}] fixOrientation];
+             NSData* compressedData = UIImageJPEGRepresentation(image, 0.5);
+             UIImage* compressedImage = [[UIImage imageWithData:compressedData] fixOrientation];
+//             image = [[UIImage alloc] initWithCGImage: image.CGImage
+//                                                         scale: 1.0
+//                                                   orientation: UIImageOrientationRight];
+             [self setStillImage:compressedImage];
              
              [[NSNotificationCenter defaultCenter] postNotificationName:kImageCapturedSuccessfully object:nil];
          }

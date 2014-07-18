@@ -22,6 +22,7 @@
 
 #import "MADrawRect.h"
 #import "MAMagnifierView.h"
+#import "MagnifierView.h"
 @interface MADrawRect()
 
 @property (strong, nonatomic) NSTimer *touchTimer;
@@ -30,7 +31,9 @@
 @end
     
 
-@implementation MADrawRect
+@implementation MADrawRect{
+    int counter;
+}
 
 @synthesize pointD = _pointD;
 @synthesize pointC = _pointC;
@@ -98,10 +101,30 @@
         [_pointD setShowsTouchWhenHighlighted:NO];
         
         [self setButtons];
+        counter = 0;
         
+//        UIPanGestureRecognizer* panreco = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+//        [self addGestureRecognizer:panreco];
     }
     return self;
 }
+
+//-(void) handlePan:(id)sender{
+//    UIPanGestureRecognizer* reco = sender;
+//    
+//    if (self.magnifierView == nil) {
+//        self.magnifierView = [[MAMagnifierView alloc] init];
+//        self.magnifierView.viewToMagnify = self.superview;
+//        [self showLoupe:nil];
+//    }
+//    self.magnifierView.pointToMagnify = [reco locationInView:self];
+//    if (counter >= 2){
+//    [self.magnifierView setNeedsDisplay];
+//        counter = 0;
+//    }else{
+//        counter++;
+//    }
+//}
 
 - (UIImage *)squareButtonWithWidth:(int)width
 {
@@ -269,17 +292,13 @@
     CGPoint raw = [[[event allTouches] anyObject] locationInView:self];
     touchOffset = CGPointMake( raw.x - control.center.x, raw.y - control.center.y);
     
-//    self.TouchTimer = [NSTimer scheduledTimerWithTimeInterval:0.01
-//                                                       target:self
-//                                                     selector:@selector(showLoupe:)
-//                                                     userInfo:nil
-//                                                      repeats:NO];
-//    if (self.magnifierView == nil) {
-//        _magnifierView = [[MAMagnifierView alloc] init];
-//        self.magnifierView.viewToMagnify = self.superview;
-//    }
-//    self.magnifierView.pointToMagnify = [self GetPoint:control];
-//    [self.magnifierView setNeedsDisplay];
+    if (self.magnifierView == nil) {
+        self.magnifierView = [[MAMagnifierView alloc] init];
+        self.magnifierView.viewToMagnify = self.superview;
+    }
+    self.magnifierView.pointToMagnify = [self GetPoint:control];
+    [self showLoupe:nil];
+    [self.magnifierView setNeedsDisplay];
 }
 
 -(CGPoint)GetPoint:(id)sender
@@ -301,9 +320,9 @@
             break;
     }
     
-    buttonPoint.x = self.frame.origin.x + buttonPoint.x ;
-    buttonPoint.y = self.frame.origin.y + buttonPoint.y ;
-    return buttonPoint;
+    CGPoint newP = CGPointMake(self.frame.origin.x+buttonPoint.y,
+                               self.frame.origin.y+self.frame.size.height - buttonPoint.x);
+    return newP;
 }
 
 - (IBAction) pointMoved:(id) sender withEvent:(UIEvent *) event
@@ -311,8 +330,9 @@
     CGPoint point = [[[event allTouches] anyObject] locationInView:self];
     point = CGPointMake(point.x - touchOffset.x, point.y - touchOffset.y);
     
-//    self.magnifierView.pointToMagnify = [self GetPoint:sender];
-//    [self.magnifierView setNeedsDisplay];
+    self.magnifierView.pointToMagnify = [self GetPoint:sender];
+
+    [self.magnifierView setNeedsDisplay];
     
     if (CGRectContainsPoint(self.bounds, point))
     {
@@ -336,7 +356,7 @@
         }
         
         [self setNeedsDisplay];
-        [self drawRect:self.bounds];
+//        [self drawRect:self.bounds];
     }
     else
     {
@@ -400,9 +420,7 @@
 {
     NSLog(@"touch exit");
     touchOffset = CGPointZero;
-    [self.touchTimer invalidate];
-    self.touchTimer = nil;
-//    [self.magnifierView removeFromSuperview];
+    [self.magnifierView removeFromSuperview];
 }
 
 - (void) resetFrame

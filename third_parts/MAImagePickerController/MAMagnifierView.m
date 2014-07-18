@@ -50,7 +50,7 @@
     }
     self.center = center;
     
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 

@@ -292,6 +292,9 @@
 -(void)imagePickerDidChooseImageWithPath:(NSString *)path{
     [self.navigationController popToRootViewControllerAnimated:YES];
     _processedImageData = [NSData dataWithContentsOfFile:path];
+//    UIImage* pi = [UIImage imageWithData:_processedImageData];
+//    pi = [UIImage imageWithCGImage:pi.CGImage scale:1.0 orientation:UIImageOrientationRight];
+//    _processedImageData = UIImageJPEGRepresentation(pi, 1);
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     YIPopupTextView* popup = [[YIPopupTextView alloc] initWithPlaceHolder:@"输入名称" maxCount:10];
     popup.tag = 12345;
